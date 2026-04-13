@@ -226,14 +226,60 @@ data/
 
 | # | 項目 | 滿分 | 滿分條件 | 評分邏輯 |
 |---|---|---|---|---|
-| A | 5Y 正規化 FCF Margin | 15 | 5Y 均值 > 15% 且單年最低 > 10% | 達成得滿分，否則依比例遞減 |
-| B | 5Y ROIC 穩定性 | 15 | 5 年中 ≥ 4 年 ROIC > 15% | 4/5 年得 15 分，3/5 得 10，2/5 得 5 |
-| C | 5Y 毛利率趨勢 | 10 | 5 年中 ≥ 3 年 GM 不下滑 | 3/5 年得 10，2/5 得 5 |
-| D | 資本密集度 | 10 | 5Y 平均 CapEx/Rev < 10% | < 10% 得 10 分，線性遞減至 20% 得 0 |
+| A | 5Y 正規化 FCF Margin | 15 | 可用年份均值 > 15% 且單年最低 > 10% | 達成得滿分，否則依比例遞減 |
+| B | 5Y ROIC 穩定性（比例制） | 15 | ≥ 80% 可用年份 ROIC > 15% | ≥80% → 15 分，≥60% → 10 分，≥40% → 5 分，否則 0 分 |
+| C | 5Y 毛利率趨勢（方向 + 韌性） | 10 | 方向分(0-5) + 下行波動分(0-5) | 見下方公式 |
+| D | 資本密集度 | 10 | 可用年份平均 CapEx/Rev < 10% | < 10% 得 10 分，線性遞減至 20% 得 0 |
 | E | 現金覆蓋總負債 | 10 | `totalCash > totalDebt` | 二元：是=10，否=0 |
 | F | 財務護城河代理分 | 20 | 合成 0-10 → 乘以 2 | 見 3.5 |
 
 **總分**：0-80，用於排名 percentile。
+
+**B. ROIC 穩定性計算**：使用可用年份比例而非絕對年數，以適應 yfinance Phase 0 通常只有 4 年乾淨資料的現實。Phase 1 升級 FMP 後若取得 5 年完整資料，公式無需改動。
+
+**C. GM 趨勢計算**（雙子分合成）：
+
+```python
+def gm_trend_score(annual_gm_series: pd.Series) -> tuple[int, dict]:
+    """
+    annual_gm_series: 可用年份的 Gross Margin（按時間順序，oldest first）
+    回傳 (total_score 0-10, breakdown dict)
+    """
+    gm_oldest = annual_gm_series.iloc[0]
+    gm_newest = annual_gm_series.iloc[-1]
+    gm_avg = annual_gm_series.mean()
+
+    # === 方向分（0-5）===
+    # 用相對變化率（非 pp），跨產業公平
+    gm_change_pct = (gm_newest - gm_oldest) / gm_oldest
+
+    if gm_change_pct >= 0.05:      # 提升 ≥ 5%
+        direction = 5
+    elif gm_change_pct >= 0:        # 持平或微升
+        direction = 3
+    elif gm_change_pct >= -0.05:    # 微降 < 5%
+        direction = 1
+    else:                            # 明顯下降
+        direction = 0
+
+    # === 下行波動分（0-5）===
+    # 只看 YoY 下降幅度，上升不計入
+    yoy_changes = annual_gm_series.diff().dropna()
+    declines = yoy_changes[yoy_changes < 0].abs()
+
+    if len(declines) == 0:
+        downside = 5               # 從未下降
+    else:
+        max_decline_relative = declines.max() / gm_avg
+        if max_decline_relative < 0.05:    # 最大單年降幅 < 平均 GM 的 5%
+            downside = 4
+        elif max_decline_relative < 0.10:  # < 10%
+            downside = 2
+        else:
+            downside = 0
+
+    return direction + downside, {...}
+```
 
 ### 3.3 3A 硬篩（6 條，全過才入 3A 池）
 
@@ -263,28 +309,29 @@ data/
 **範圍**：0-10 分，乘以 2 得到 0-20 加分。
 
 ```python
-def moat_proxy_score(annual_5y: dict) -> float:
+def moat_proxy_score(annual_data: dict) -> float:
     """
-    annual_5y: 5 年年度財務資料
+    annual_data: 可用年份的年度財務資料
     回傳 0-10 分
     """
-    # 1. GM 穩定度 (0-4 分)
-    gm_std = annual_5y['gross_margin'].std()
-    gm_score = max(0, min(4, 4 - gm_std * 20))
-    # std < 0.02 → 4 分, std > 0.2 → 0 分
-    
-    # 2. 5Y ROIC 平均 (0-3 分)
-    roic_avg = annual_5y['roic'].mean()
+    # 1. GM 韌性 (0-4 分) — 沿用 GM Trend 底層邏輯
+    gm_trend_total, _ = gm_trend_score(annual_data['gross_margin'])
+    gm_resilience = (gm_trend_total / 10) * 4
+    # GM Trend 滿分 10 → 韌性滿分 4
+
+    # 2. 5Y ROIC 平均 (0-3 分) — 不變
+    roic_avg = annual_data['roic'].mean()
     roic_score = max(0, min(3, roic_avg * 10))
     # ROIC 30% → 3 分, ROIC 0% → 0 分
-    
-    # 3. 5Y 營收成長一致性 (0-3 分)
-    rev_growth = annual_5y['revenue'].pct_change().dropna()
+
+    # 3. 營收成長一致性 (0-3 分) — 比例制
+    rev_growth = annual_data['revenue'].pct_change().dropna()
     positive_years = (rev_growth > 0).sum()
-    consistency_score = min(3, positive_years * 0.75)
-    # 4 年正成長 → 3 分
-    
-    return gm_score + roic_score + consistency_score
+    available_years = len(rev_growth)
+    consistency_score = min(3, (positive_years / available_years) * 3.75)
+    # 100% 正成長 → 3 分，80% → 3 分，75% → 2.81 分
+
+    return gm_resilience + roic_score + consistency_score
 ```
 
 **UI 標註**：必須顯示為「財務護城河代理分」，並說明為推論而非質化評估。
@@ -1078,6 +1125,30 @@ minervini-quality-backtest/
   - 未來若 CAGR 進入加分項排名計算，需考慮用 log 或 rank 壓縮 outlier
   - 3A 池本來就假設成長在前段，NVDA 這種案例反而應該在 MLB 池（已驗證的成熟高成長）
 - 影響：目前無程式影響；未來若有加分項用到 trailing CAGR 需重新設計
+
+**決策 13：比例制取代絕對年數**
+- 觸發：yfinance Phase 0 三支測試股（NVDA/LULU/GLW）均只有 4 年乾淨財報（第 5 年為 NaN）
+- 決定：所有「5Y 穩定性/一致性」類評分改用可用年份比例，而非絕對年數
+- 理由：
+  1. Phase 0 穩定只有 4 年，Phase 1 升級 FMP 可能有 5 年完整資料
+  2. 比例制可無痛適應不同年份數，不用改門檻
+  3. 語義更清楚（「75% 的年份達標」vs「3/4 年但門檻寫 4/5 年」）
+- 影響：SPEC 3.2 項目 B（ROIC 穩定性）、項目 C（GM 趨勢）、SPEC 3.5 Moat Proxy 營收一致性
+
+**決策 14：GM Trend 採方向 + 下行波動拆分**
+- 觸發：NVDA GM 從 56.9% 結構性提升至 71.1%（AI 定價權），但 std=0.0816 被原公式判為「不穩定」（2.37/4 分）
+- 決定：拆為方向分（0-5）+ 下行波動分（0-5），取代原本的 std 反向計分
+- 理由：
+  1. 原公式無法區分「GM 往上波動」和「GM 往下波動」
+  2. 結構性提升（護城河強化）不應被懲罰
+  3. 只看下行波動的幅度更符合護城河韌性的語義
+- 影響：SPEC 3.2 項目 C、SPEC 3.5 Moat Proxy 中的 GM 子項連動修訂
+
+**決策 15：所有波動性指標用相對值**
+- 觸發：決策 14 設計過程中發現，用 absolute pp 門檻（如「最大降幅 < 3pp」）對不同 GM 水準的公司不公平（GM 30% 降 3pp = -10%，GM 70% 降 3pp = -4.3%）
+- 決定：所有波動幅度用相對值（decline / avg GM），不用 absolute pp
+- 理由：跨產業公平性。低 GM 行業（工業、零售）vs 高 GM 行業（軟體、半導體）應同一把尺
+- 影響：SPEC 3.2 項目 C 的下行波動門檻定義
 
 ---
 

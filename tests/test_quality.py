@@ -15,7 +15,11 @@ from screener.quality_core import (
     has_growth_evidence,
     passes_mlb_hard_filter,
 )
-from screener.quality_score import calculate_quality_score, moat_proxy_score
+from screener.quality_score import (
+    calculate_quality_score,
+    gm_trend_score,
+    moat_proxy_score,
+)
 
 TICKERS = ["NVDA", "LULU", "GLW"]
 
@@ -192,3 +196,32 @@ class TestQualityScore:
         for k, v in breakdown.items():
             print(f"  {k}: {v}")
         assert 0 <= score <= 10
+
+    def test_gm_trend_direction_and_downside(
+        self, ticker_data_map: dict
+    ) -> None:
+        """NVDA GM rose structurally (56.9%→71.1%), direction should be 5."""
+        data = ticker_data_map["NVDA"]["annual"]
+        gm_s = metrics.gross_margin_series(data["income_stmt"])
+        assert gm_s is not None
+        gm_sorted = gm_s.sort_index()
+        total, details = gm_trend_score(gm_sorted)
+        print(f"\n=== NVDA GM Trend Score: {total}/10 ===")
+        print(f"  {details}")
+        assert details["direction"] == 5, f"Expected direction=5, got {details['direction']}"
+        assert details["downside"] >= 0
+        assert total >= 5, f"NVDA GM trend should be >= 5, got {total}"
+
+    def test_moat_proxy_gm_resilience(
+        self, ticker_data_map: dict
+    ) -> None:
+        """NVDA moat GM resilience should benefit from structural improvement."""
+        data = ticker_data_map["NVDA"]["annual"]
+        score, breakdown = moat_proxy_score(
+            data["income_stmt"], data["balance_sheet"]
+        )
+        gm_res = breakdown["gm_resilience"]
+        print(f"\n=== NVDA Moat GM Resilience: {gm_res['score']}/4 ===")
+        print(f"  gm_trend_total: {gm_res['gm_trend_total']}/10")
+        # Should be better than old std-based score (was 2.37/4)
+        assert gm_res["score"] >= 2.5, f"Expected >= 2.5, got {gm_res['score']}"
