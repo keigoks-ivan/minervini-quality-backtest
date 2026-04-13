@@ -1,0 +1,30 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+
+# Data cache
+data/cache/
+*.parquet
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Secrets
+.env
+*.key
+
+# Build outputs
+reports/output/
+*.log
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/

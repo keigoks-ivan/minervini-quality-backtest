@@ -1,0 +1,55 @@
+quality_filter:
+  mlb:
+    fcf_margin_min: 0.10
+    roic_min: 0.15
+    eps_cagr_2y_fwd_min: 0.20
+    eps_cagr_3y_trail_min: 0.15
+    peg_max: 2.0
+    debt_to_equity_max: 0.7
+  triple_a:
+    fcf_margin_min: 0.0
+    roic_min: 0.05
+    eps_cagr_2y_fwd_min: 0.30
+    eps_cagr_3y_trail_min: 0.25
+    peg_max: 2.0
+    debt_to_equity_max: 0.7
+
+technical_filter:
+  mlb:
+    rs_rating_min: 80
+    volume_breakout_multiplier: 1.4
+  triple_a:
+    rs_rating_min: 90
+    volume_breakout_multiplier: 1.5
+
+vcp:
+  lookback_days: 60
+  max_drawdown: 0.25
+  volatility_ratio_threshold: 0.7
+  volume_ratio_threshold: 0.7
+
+position_management:
+  mlb:
+    max_position_pct: 25
+    stop_loss_pct: -7
+    profit_take_pct: 22.5
+  triple_a:
+    max_position_pct: 15
+    stop_loss_pct: -6
+    profit_take_pct: 17.5
+  max_concurrent_positions: 6
+
+universe:
+  indexes:
+    - SP500
+    - NDX
+  min_market_cap_usd: 2000000000
+  min_analyst_coverage: 3
+  min_listing_years: 3
+
+backtest:
+  start_date: "2020-01-01"
+  end_date: "2025-12-31"
+  initial_capital: 100000
+  slippage: 0.001
+  commission: 0.0005
