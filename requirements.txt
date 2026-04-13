@@ -11,3 +11,8 @@ pytest-cov>=4.1
 ipython>=8.0
 jupyter>=1.0
 # vectorbt>=0.26.0  # Phase 1 再啟用
+
+# HTML parsing (pd.read_html 依賴)
+lxml>=4.9
+beautifulsoup4>=4.12
+html5lib>=1.1
