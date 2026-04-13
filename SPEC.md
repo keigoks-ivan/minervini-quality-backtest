@@ -1063,6 +1063,22 @@ minervini-quality-backtest/
 - 理由：承認中型成長股擴張期合理的利潤率水準；配合 3A FCF > 0% 形成清楚分層
 - 影響：MLB 池範圍略擴大，預期池大小 60-80 支
 
+### 2026-04-13（續）
+
+**決策 12：接受極端 EPS CAGR 作為真實訊號**
+- 觸發：NVDA 2023-2026 trailing 3Y EPS CAGR = 204%（FY2023 $0.174 → FY2026 $4.90，split-adjusted）
+- 現象：經驗證為真實計算結果，非 bug
+- 決定：不對 CAGR 設上限截斷
+- 理由：
+  1. split-adjusted EPS 比較是數學正確的
+  2. 硬篩只要求 > 15%，extreme value 不影響入池判斷
+  3. 人為截斷反而引入 bias（誰決定 100% 還是 200% 是天花板？）
+- 但留意：
+  - 極端 trailing CAGR 可能反映「爆發已發生」（late-stage）而非「爆發正在發生」
+  - 未來若 CAGR 進入加分項排名計算，需考慮用 log 或 rank 壓縮 outlier
+  - 3A 池本來就假設成長在前段，NVDA 這種案例反而應該在 MLB 池（已驗證的成熟高成長）
+- 影響：目前無程式影響；未來若有加分項用到 trailing CAGR 需重新設計
+
 ---
 
 ## 附錄 A：待確認項目（`[TBD]`）
@@ -1074,6 +1090,7 @@ minervini-quality-backtest/
 3. **Phase 0 是否實作分析師上修動能加分項**（需歷史快照，建議略過，等 Phase 1）
 4. **月報 Email 訂閱者名單管理**（手動 vs 接 Substack API）
 5. **Live Tracking 是否需要虛擬 IBKR 帳戶對接**（或純 CSV 夠用）
+6. **[待決定] 加分項是否引入 trailing EPS CAGR 及其 outlier 處理**（相關：決策 12）
 
 ---
 
