@@ -303,6 +303,9 @@ header nav a.active{color:#fff;border-bottom-color:#3b82f6}
                       background:var(--border);border-radius:999px;padding:.15rem .6rem}
 .empty-msg{background:var(--card);border:1px solid var(--border);border-radius:10px;
            padding:1.5rem;text-align:center;color:var(--muted);font-size:.9rem}
+.section-desc{font-size:.8rem;color:var(--muted);line-height:1.6;margin-bottom:.75rem;
+              padding:.7rem .9rem;background:var(--brand-light);border-radius:8px;
+              border-left:3px solid var(--brand)}
 
 /* Tables */
 .table-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;
@@ -391,6 +394,9 @@ footer a{color:var(--muted)}
 
   <div class="section">
     <h2 class="section-title">Candidates <span class="count">{{ candidates|length }}</span></h2>
+    <div class="section-desc">
+      通過所有篩選的最終候選標的。入選條件：Quality Pool 成員 + Trend Template 確認（Stage 2 上升趨勢）+ VCP 收斂型態偵測 + RS Rating 達標（MLB &ge; 80, 3A &ge; 90）。這些是系統認為品質、趨勢、動能三者兼具的標的。
+    </div>
     {% if candidates %}
     <div class="table-wrap">
     <table>
@@ -421,6 +427,9 @@ footer a{color:var(--muted)}
 
   <div class="section">
     <h2 class="section-title">Watch List <span class="count">{{ watch_list|length }}</span></h2>
+    <div class="section-desc">
+      趨勢已確認但尚未完全就位的觀察標的。這些股票已通過 Quality Pool + Trend Template，但缺少 VCP 收斂型態或 RS Rating 未達門檻。值得持續追蹤，等待型態成熟或動能增強。
+    </div>
     {% if watch_list %}
     <div class="table-wrap">
     <table>
@@ -450,6 +459,9 @@ footer a{color:var(--muted)}
 
   <div class="section">
     <h2 class="section-title">Full Quality Pool <span class="count">{{ quality_pool|length }}</span></h2>
+    <div class="section-desc">
+      通過基本面品質篩選的完整名單。MLB（大聯盟）：FCF Margin &ge; 10%, ROIC &ge; 15%, EPS CAGR 前瞻 &ge; 15% + 回顧 &ge; 15%。3A（潛力股）：EPS CAGR 前瞻 &ge; 30% + 回顧 &ge; 25%，加速度 &ge; 1.25x，較寬鬆的品質門檻但更嚴格的技術要求。Trend/VCP 欄位顯示技術面是否就位。
+    </div>
     <div class="table-wrap">
     <table>
       <thead><tr>
