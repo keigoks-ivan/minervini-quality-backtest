@@ -6,7 +6,7 @@ to produce the daily candidate list.
 
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 import yaml
@@ -219,7 +219,7 @@ def run_daily_screener(
     quality_pool.sort(key=lambda x: x["quality_score"], reverse=True)
 
     result = {
-        "run_timestamp": datetime.now().isoformat(),
+        "run_timestamp": datetime.now(timezone(timedelta(hours=8))).isoformat(),
         "universe_size": len(tickers),
         "summary": summary,
         "candidates": candidates,
@@ -353,7 +353,8 @@ def save_screener_output(result: dict, output_dir: str) -> None:
     """Save screener results as JSON snapshot and HTML report."""
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
-    today = datetime.now().strftime("%Y-%m-%d")
+    _TPE = timezone(timedelta(hours=8))
+    today = datetime.now(_TPE).strftime("%Y-%m-%d")
 
     # JSON snapshot
     json_path = out / f"snapshot_{today}.json"
@@ -395,3 +396,26 @@ def save_screener_output(result: dict, output_dir: str) -> None:
     )
     html_path.write_text(html)
     logger.info("Saved HTML report to %s", html_path)
+
+    # Latest symlinks (fixed filenames for stable URLs)
+    import shutil
+    latest_html = out / "latest.html"
+    latest_json = out / "latest.json"
+    shutil.copy2(html_path, latest_html)
+    shutil.copy2(json_path, latest_json)
+    logger.info("Copied latest.html and latest.json")
+
+
+if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    )
+    result = run_daily_screener()
+    n_cand = len(result["candidates"])
+    n_watch = len(result["watch_list"])
+    n_pool = len(result["quality_pool"])
+    logger.info(
+        "Done — %d candidates, %d watch list, %d quality pool",
+        n_cand, n_watch, n_pool,
+    )
