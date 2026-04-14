@@ -160,7 +160,7 @@ def passes_3a_hard_filter(
 
     # Only try turnaround if EPS conditions failed due to None (negative base)
     if (eps_fwd_fail or eps_trail_fail) and (eps_fwd_none or eps_trail_none):
-        ta_pass, ta_details = _check_turnaround(ticker_data)
+        ta_pass, ta_details = _check_turnaround(ticker_data, params)
         details["turnaround"] = ta_details
         if ta_pass:
             # Override EPS conditions
@@ -177,12 +177,12 @@ def passes_3a_hard_filter(
     return passed, details
 
 
-def _check_turnaround(ticker_data: dict) -> tuple[bool, dict]:
-    """Check turnaround path for 3A (Decision 18).
+def _check_turnaround(ticker_data: dict, params: dict) -> tuple[bool, dict]:
+    """Check turnaround path for 3A (Decision 18, updated Decision 21).
 
     Three conditions, all must pass:
     1. TTM EPS > 0 or FY+1 estimate > 0
-    2. FY+2 estimate > FY+1 estimate × 1.30
+    2. FY+2 estimate > FY+1 estimate × acceleration_min (default 1.25)
     3. Revenue CAGR 3Y > 25%
     """
     details: dict = {}
@@ -209,14 +209,15 @@ def _check_turnaround(ticker_data: dict) -> tuple[bool, dict]:
     }
 
     # Condition 2: Earnings acceleration
+    accel_min = params.get("turnaround_acceleration_min", 1.25)
     earnings_accel = False
     if est_fy1 is not None and est_fy2 is not None and est_fy1 > 0:
-        earnings_accel = est_fy2 > est_fy1 * 1.30
+        earnings_accel = est_fy2 > est_fy1 * accel_min
     details["earnings_acceleration"] = {
         "pass": earnings_accel,
         "est_fy1": round(float(est_fy1), 4) if est_fy1 is not None else None,
         "est_fy2": round(float(est_fy2), 4) if est_fy2 is not None else None,
-        "threshold": "FY+2 > FY+1 × 1.30",
+        "threshold": f"FY+2 > FY+1 × {accel_min}",
     }
 
     # Condition 3: Revenue CAGR 3Y > 25%

@@ -294,7 +294,7 @@ def gm_trend_score(annual_gm_series: pd.Series) -> tuple[int, dict]:
 
 **3A Turnaround 路徑**（決策 18）：當 trailing EPS ≤ 0 或基期 EPS ≤ 0 導致 CAGR 無法計算時，改用以下條件替代條件 3+4：
 - TTM EPS > 0 或 FY+1 EPS 預估 > 0（已經或即將轉正）
-- FY+2 EPS > FY+1 EPS × 1.30（盈利加速中）
+- FY+2 EPS > FY+1 EPS × 1.25（盈利加速中，決策 21 校準）
 - 過去 3 年 Revenue CAGR > 25%（營收軌跡驗證成長非幻覺）
 三條全過視為等同於滿足條件 3+4。
 
@@ -1196,18 +1196,39 @@ minervini-quality-backtest/
   3. 3.0x 門檻是投資級公司的合理上限
 - 影響：AAPL（Net Debt 為負）、MA 等回購型公司可通過
 
+### 2026-04-14（續）
+
+**決策 20：MSFT 卡 trailing CAGR 是系統正確行為**
+- 觸發：MLB EPS 2Y fwd 門檻校準後 MSFT 仍未入池
+- 診斷：MSFT trailing 3Y EPS CAGR = 12.2% < 15% 門檻
+- 決定：不為 MSFT 單獨放寬 trailing 門檻
+- 理由：trailing 12.2% 是真實反映；系統需「過去 + 未來」雙重驗證；當 trailing 自然追上 15% 時系統會自動納入
+- 系統哲學：不為單一公司放寬門檻
+
+**決策 21：Turnaround 門檻 1.30 → 1.25 微調**
+- 觸發：CRWD/DDOG/NET turnaround 的 FY+2/FY+1 比率 1.22-1.29，全部被 1.30 擋下
+- 診斷：實際阻擋來自 ROIC < 5% 和 PEG > 2，非 turnaround 門檻
+- 決定：降至 1.25（「FY+2 比 FY+1 加速 25%」），對當前池無影響但邏輯更合理
+- 影響：未來若 SaaS 估值修正使 PEG 降低，1.25 不會成為冗餘卡關
+
+**決策 22：MCO 暴露「下跌途中假 VCP」是已知系統行為**
+- 觸發：MCO VCP=YES 但 Trend 1/7 FAIL（空頭結構中波動收斂）
+- 決定：不修 VCP detector，Trend Template 已正確擋下
+- 理由：VCP 只管波動數學，不判趨勢方向；兩層防護設計有效
+- 系統哲學：每層只負責自己的職責，避免 over-engineer
+
 ---
 
 ## 附錄 A：待確認項目（`[TBD]`）
 
-以下項目尚需確認，不阻擋 Phase 0 執行但需儘快決定：
+Phase 0 完成後的待確認項目：
 
-1. **Pure MA 出場規則的完整描述**（回測系統 B 需要）
-2. **3A 「ROIC > 5% 或改善中」的「改善中」具體定義**（建議：YoY 提升 > 2 個百分點）
-3. **Phase 0 是否實作分析師上修動能加分項**（需歷史快照，建議略過，等 Phase 1）
-4. **月報 Email 訂閱者名單管理**（手動 vs 接 Substack API）
-5. **Live Tracking 是否需要虛擬 IBKR 帳戶對接**（或純 CSV 夠用）
-6. **[待決定] 加分項是否引入 trailing EPS CAGR 及其 outlier 處理**（相關：決策 12）
+1. **Pure MA 出場規則的完整描述**（Phase 1 回測系統 B 需要）— 待 Phase 1
+2. **3A 「ROIC > 5% 或改善中」的「改善中」具體定義** — 待 Phase 1（Phase 0 僅用 > 5% 硬篩）
+3. ~~Phase 0 是否實作分析師上修動能加分項~~ — **已決定略過**，等 Phase 1 FMP 資料源
+4. **月報 Email 訂閱者名單管理** — 待 Phase 1 部署時決定
+5. **Live Tracking 是否需要虛擬 IBKR 帳戶對接** — 待 Phase 1（Phase 0 用 CSV）
+6. **加分項是否引入 trailing EPS CAGR 及其 outlier 處理** — 待 Phase 1（決策 12 已記錄風險）
 
 ---
 

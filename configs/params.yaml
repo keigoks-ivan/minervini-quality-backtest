@@ -15,6 +15,7 @@ quality_filter:
     peg_max: 2.0
     debt_to_equity_max: 0.7
     net_debt_to_ebitda_max: 3.0
+    turnaround_acceleration_min: 1.25
 
 technical_filter:
   mlb:
