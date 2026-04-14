@@ -17,15 +17,15 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.12'
 
       - name: Cache pip dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/pip
           key: pip-${{ hashFiles('requirements.txt') }}
@@ -33,7 +33,7 @@ jobs:
             pip-
 
       - name: Cache yfinance data
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: data/cache/
           key: yf-cache-${{ hashFiles('data/universe/*.parquet') }}
@@ -47,7 +47,7 @@ jobs:
         run: python -m live.daily_screener
 
       - name: Checkout financial-analysis-bot
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: keigoks-ivan/financial-analysis-bot
           token: ${{ secrets.RESEARCH_REPO_TOKEN }}
