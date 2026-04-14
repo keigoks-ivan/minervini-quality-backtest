@@ -458,20 +458,19 @@ footer a{color:var(--muted)}
   </div>
 
   <div class="section">
-    <h2 class="section-title">Full Quality Pool <span class="count">{{ quality_pool|length }}</span></h2>
+    <h2 class="section-title">MLB Quality Pool <span class="count">{{ quality_pool|selectattr('pool','equalto','MLB')|list|length }}</span></h2>
     <div class="section-desc">
-      通過基本面品質篩選的完整名單。MLB（大聯盟）：FCF Margin &ge; 10%, ROIC &ge; 15%, EPS CAGR 前瞻 &ge; 15% + 回顧 &ge; 15%。3A（潛力股）：EPS CAGR 前瞻 &ge; 30% + 回顧 &ge; 25%，加速度 &ge; 1.25x，較寬鬆的品質門檻但更嚴格的技術要求。Trend/VCP 欄位顯示技術面是否就位。
+      大聯盟級品質股。入選門檻：FCF Margin &ge; 10%, ROIC &ge; 15%, EPS CAGR 前瞻 2 年 &ge; 15% + 回顧 3 年 &ge; 15%, PEG &le; 2.0, D/E &le; 0.7。成熟企業中兼具品質與成長的核心持股候選。
     </div>
     <div class="table-wrap">
     <table>
       <thead><tr>
-        <th>Ticker</th><th>Pool</th><th>Quality</th><th class="num">RS</th><th>Trend</th><th>VCP</th>
+        <th>Ticker</th><th>Quality</th><th class="num">RS</th><th>Trend</th><th>VCP</th>
       </tr></thead>
       <tbody>
-      {% for q in quality_pool %}
+      {% for q in quality_pool if q.pool == 'MLB' %}
       <tr>
         <td class="ticker">{{ q.ticker }}</td>
-        <td><span class="pool-{{ q.pool|lower }}">{{ q.pool }}</span></td>
         <td>{{ "%.1f"|format(q.quality_score) }}/80</td>
         <td class="num">{{ q.rs_rating or '-' }}</td>
         <td class="{{ 'pass' if q.trend_template and q.trend_template.all_pass else 'fail' }}">{{ 'PASS' if q.trend_template and q.trend_template.all_pass else 'FAIL' }}</td>
@@ -481,6 +480,35 @@ footer a{color:var(--muted)}
       </tbody>
     </table>
     </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">3A Quality Pool <span class="count">{{ quality_pool|selectattr('pool','equalto','3A')|list|length }}</span></h2>
+    <div class="section-desc">
+      潛力加速股。入選門檻：EPS CAGR 前瞻 2 年 &ge; 30% + 回顧 3 年 &ge; 25%，盈餘加速度 &ge; 1.25x，較寬鬆的品質底線（FCF Margin &ge; 0%, ROIC &ge; 5%）。高成長但不確定性較高，技術門檻更嚴格（RS &ge; 90），部位更小、停損更緊。
+    </div>
+    {% if quality_pool|selectattr('pool','equalto','3A')|list %}
+    <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>Ticker</th><th>Quality</th><th class="num">RS</th><th>Trend</th><th>VCP</th>
+      </tr></thead>
+      <tbody>
+      {% for q in quality_pool if q.pool == '3A' %}
+      <tr>
+        <td class="ticker">{{ q.ticker }}</td>
+        <td>{{ "%.1f"|format(q.quality_score) }}/80</td>
+        <td class="num">{{ q.rs_rating or '-' }}</td>
+        <td class="{{ 'pass' if q.trend_template and q.trend_template.all_pass else 'fail' }}">{{ 'PASS' if q.trend_template and q.trend_template.all_pass else 'FAIL' }}</td>
+        <td class="{{ 'pass' if q.vcp and q.vcp.is_vcp else 'fail' }}">{{ 'YES' if q.vcp and q.vcp.is_vcp else 'NO' }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+    {% else %}
+    <div class="empty-msg">No 3A stocks today.</div>
+    {% endif %}
   </div>
 
   <div style="margin-top:1.5rem;text-align:right">
