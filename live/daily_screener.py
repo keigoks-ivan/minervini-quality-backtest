@@ -487,7 +487,7 @@ footer a{color:var(--muted)}
         <li><strong>PEG</strong> &le; 2.0 — 本益比相對成長率的合理性</li>
         <li><strong>D/E</strong> &le; 0.7 — 負債權益比（財務槓桿控制）</li>
       </ul>
-      <strong>Quality 分數</strong>（滿分 80）：FCF 穩定度 (15) + ROIC 穩定度 (15) + 毛利率趨勢 (10) + 資本密度 (10) + 現金覆蓋負債 (10) + 護城河代理分 (20)。
+      <strong>Quality 分數</strong>（滿分 80）用於排名，僅衡量品質穩定度：FCF 穩定度 (15) + ROIC 穩定度 (15) + 毛利率趨勢 (10) + 資本密度 (10) + 現金覆蓋負債 (10) + 護城河代理分 (20)。EPS CAGR 為入選硬篩門檻，通過後不重複計分。
     </div>
     <div class="table-wrap">
     <table>
@@ -526,7 +526,7 @@ footer a{color:var(--muted)}
         <li><strong>ROIC</strong> &ge; 5% — 較寬鬆底線</li>
         <li><strong>PEG</strong> &le; 2.0, <strong>D/E</strong> &le; 0.7 — 同 MLB</li>
       </ul>
-      <strong>Quality 分數</strong>（滿分 80）：FCF 穩定度 (15) + ROIC 穩定度 (15) + 毛利率趨勢 (10) + 資本密度 (10) + 現金覆蓋負債 (10) + 護城河代理分 (20)。
+      <strong>Quality 分數</strong>（滿分 80）用於排名，僅衡量品質穩定度：FCF 穩定度 (15) + ROIC 穩定度 (15) + 毛利率趨勢 (10) + 資本密度 (10) + 現金覆蓋負債 (10) + 護城河代理分 (20)。EPS CAGR 為入選硬篩門檻，通過後不重複計分。
     </div>
     {% if quality_pool|selectattr('pool','equalto','3A')|list %}
     <div class="table-wrap">
