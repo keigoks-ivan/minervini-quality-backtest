@@ -306,6 +306,8 @@ header nav a.active{color:#fff;border-bottom-color:#3b82f6}
 .section-desc{font-size:.8rem;color:var(--muted);line-height:1.6;margin-bottom:.75rem;
               padding:.7rem .9rem;background:var(--brand-light);border-radius:8px;
               border-left:3px solid var(--brand)}
+.section-desc ul{margin:.3rem 0 0 1.1rem;padding:0}
+.section-desc li{margin-bottom:.15rem}
 
 /* Tables */
 .table-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;
@@ -395,7 +397,13 @@ footer a{color:var(--muted)}
   <div class="section">
     <h2 class="section-title">Candidates <span class="count">{{ candidates|length }}</span></h2>
     <div class="section-desc">
-      通過所有篩選的最終候選標的。入選條件：Quality Pool 成員 + Trend Template 確認（Stage 2 上升趨勢）+ VCP 收斂型態偵測 + RS Rating 達標（MLB &ge; 80, 3A &ge; 90）。這些是系統認為品質、趨勢、動能三者兼具的標的。
+      通過所有篩選的最終候選標的，品質、趨勢、動能三者兼具：
+      <ul>
+        <li>Quality Pool 成員（通過基本面品質篩選）</li>
+        <li>Trend Template PASS（Stage 2 上升趨勢確認）</li>
+        <li>VCP 收斂型態偵測通過（波動率收斂 + 量能萎縮）</li>
+        <li>RS Rating 達標（MLB &ge; 80, 3A &ge; 90）</li>
+      </ul>
     </div>
     {% if candidates %}
     <div class="table-wrap">
@@ -428,7 +436,13 @@ footer a{color:var(--muted)}
   <div class="section">
     <h2 class="section-title">Watch List <span class="count">{{ watch_list|length }}</span></h2>
     <div class="section-desc">
-      趨勢已確認但尚未完全就位的觀察標的。這些股票已通過 Quality Pool + Trend Template，但缺少 VCP 收斂型態或 RS Rating 未達門檻。值得持續追蹤，等待型態成熟或動能增強。
+      趨勢已確認但尚未完全就位的觀察標的，值得持續追蹤：
+      <ul>
+        <li>已通過 Quality Pool 基本面篩選</li>
+        <li>Trend Template PASS（Stage 2 上升趨勢確認）</li>
+        <li>缺少 VCP 收斂型態，或 RS Rating 未達門檻</li>
+        <li>等待型態成熟或動能增強後可能升級為 Candidate</li>
+      </ul>
     </div>
     {% if watch_list %}
     <div class="table-wrap">
@@ -460,18 +474,32 @@ footer a{color:var(--muted)}
   <div class="section">
     <h2 class="section-title">MLB Quality Pool <span class="count">{{ quality_pool|selectattr('pool','equalto','MLB')|list|length }}</span></h2>
     <div class="section-desc">
-      大聯盟級品質股。入選門檻：FCF Margin &ge; 10%, ROIC &ge; 15%, EPS CAGR 前瞻 2 年 &ge; 15% + 回顧 3 年 &ge; 15%, PEG &le; 2.0, D/E &le; 0.7。成熟企業中兼具品質與成長的核心持股候選。
+      大聯盟級品質股 — 成熟企業中兼具品質與成長的核心持股候選：
+      <ul>
+        <li><strong>FCF Margin</strong> &ge; 10% — 自由現金流佔營收比例</li>
+        <li><strong>ROIC</strong> &ge; 15% — 投入資本回報率</li>
+        <li><strong>EPS CAGR 前瞻 2 年</strong> &ge; 15% — 分析師預估盈餘年複合成長</li>
+        <li><strong>EPS CAGR 回顧 3 年</strong> &ge; 15% — 過去實際盈餘年複合成長</li>
+        <li><strong>PEG</strong> &le; 2.0 — 本益比相對成長率的合理性</li>
+        <li><strong>D/E</strong> &le; 0.7 — 負債權益比（財務槓桿控制）</li>
+      </ul>
+      <strong>Quality 分數</strong>（滿分 80）：FCF 穩定度 (15) + ROIC 穩定度 (15) + 毛利率趨勢 (10) + 資本密度 (10) + 現金覆蓋負債 (10) + 護城河代理分 (20)。
     </div>
     <div class="table-wrap">
     <table>
       <thead><tr>
-        <th>Ticker</th><th>Quality</th><th class="num">RS</th><th>Trend</th><th>VCP</th>
+        <th>Ticker</th><th>Quality</th><th class="num">EPS Fwd</th><th class="num">ROIC</th><th class="num">FCF%</th><th class="num">PEG</th><th class="num">D/E</th><th class="num">RS</th><th>Trend</th><th>VCP</th>
       </tr></thead>
       <tbody>
       {% for q in quality_pool if q.pool == 'MLB' %}
       <tr>
         <td class="ticker">{{ q.ticker }}</td>
         <td>{{ "%.1f"|format(q.quality_score) }}/80</td>
+        <td class="num">{% if q.hard_filter_details.eps_cagr_2y_fwd %}{{ "%.0f"|format(q.hard_filter_details.eps_cagr_2y_fwd.value * 100) }}%{% else %}-{% endif %}</td>
+        <td class="num">{% if q.hard_filter_details.roic %}{{ "%.0f"|format(q.hard_filter_details.roic.value * 100) }}%{% else %}-{% endif %}</td>
+        <td class="num">{% if q.hard_filter_details.fcf_margin %}{{ "%.0f"|format(q.hard_filter_details.fcf_margin.value * 100) }}%{% else %}-{% endif %}</td>
+        <td class="num">{% if q.hard_filter_details.peg %}{{ "%.1f"|format(q.hard_filter_details.peg.value) }}{% else %}-{% endif %}</td>
+        <td class="num">{% if q.hard_filter_details.debt_to_equity %}{{ "%.2f"|format(q.hard_filter_details.debt_to_equity.value) }}{% else %}-{% endif %}</td>
         <td class="num">{{ q.rs_rating or '-' }}</td>
         <td class="{{ 'pass' if q.trend_template and q.trend_template.all_pass else 'fail' }}">{{ 'PASS' if q.trend_template and q.trend_template.all_pass else 'FAIL' }}</td>
         <td class="{{ 'pass' if q.vcp and q.vcp.is_vcp else 'fail' }}">{{ 'YES' if q.vcp and q.vcp.is_vcp else 'NO' }}</td>
@@ -485,19 +513,33 @@ footer a{color:var(--muted)}
   <div class="section">
     <h2 class="section-title">3A Quality Pool <span class="count">{{ quality_pool|selectattr('pool','equalto','3A')|list|length }}</span></h2>
     <div class="section-desc">
-      潛力加速股。入選門檻：EPS CAGR 前瞻 2 年 &ge; 30% + 回顧 3 年 &ge; 25%，盈餘加速度 &ge; 1.25x，較寬鬆的品質底線（FCF Margin &ge; 0%, ROIC &ge; 5%）。高成長但不確定性較高，技術門檻更嚴格（RS &ge; 90），部位更小、停損更緊。
+      潛力加速股 — 高成長但不確定性較高，技術門檻更嚴格，部位更小、停損更緊：
+      <ul>
+        <li><strong>EPS CAGR 前瞻 2 年</strong> &ge; 30% — 分析師預估盈餘高速成長</li>
+        <li><strong>EPS CAGR 回顧 3 年</strong> &ge; 25% — 過去實際盈餘高速成長</li>
+        <li><strong>盈餘加速度</strong> &ge; 1.25x — 前瞻成長率 / 回顧成長率，確認加速中</li>
+        <li><strong>FCF Margin</strong> &ge; 0% — 較寬鬆底線（允許高投資期）</li>
+        <li><strong>ROIC</strong> &ge; 5% — 較寬鬆底線</li>
+        <li><strong>PEG</strong> &le; 2.0, <strong>D/E</strong> &le; 0.7 — 同 MLB</li>
+      </ul>
+      <strong>Quality 分數</strong>（滿分 80）：FCF 穩定度 (15) + ROIC 穩定度 (15) + 毛利率趨勢 (10) + 資本密度 (10) + 現金覆蓋負債 (10) + 護城河代理分 (20)。
     </div>
     {% if quality_pool|selectattr('pool','equalto','3A')|list %}
     <div class="table-wrap">
     <table>
       <thead><tr>
-        <th>Ticker</th><th>Quality</th><th class="num">RS</th><th>Trend</th><th>VCP</th>
+        <th>Ticker</th><th>Quality</th><th class="num">EPS Fwd</th><th class="num">ROIC</th><th class="num">FCF%</th><th class="num">PEG</th><th class="num">D/E</th><th class="num">RS</th><th>Trend</th><th>VCP</th>
       </tr></thead>
       <tbody>
       {% for q in quality_pool if q.pool == '3A' %}
       <tr>
         <td class="ticker">{{ q.ticker }}</td>
         <td>{{ "%.1f"|format(q.quality_score) }}/80</td>
+        <td class="num">{% if q.hard_filter_details.eps_cagr_2y_fwd %}{{ "%.0f"|format(q.hard_filter_details.eps_cagr_2y_fwd.value * 100) }}%{% else %}-{% endif %}</td>
+        <td class="num">{% if q.hard_filter_details.roic %}{{ "%.0f"|format(q.hard_filter_details.roic.value * 100) }}%{% else %}-{% endif %}</td>
+        <td class="num">{% if q.hard_filter_details.fcf_margin %}{{ "%.0f"|format(q.hard_filter_details.fcf_margin.value * 100) }}%{% else %}-{% endif %}</td>
+        <td class="num">{% if q.hard_filter_details.peg %}{{ "%.1f"|format(q.hard_filter_details.peg.value) }}{% else %}-{% endif %}</td>
+        <td class="num">{% if q.hard_filter_details.debt_to_equity %}{{ "%.2f"|format(q.hard_filter_details.debt_to_equity.value) }}{% else %}-{% endif %}</td>
         <td class="num">{{ q.rs_rating or '-' }}</td>
         <td class="{{ 'pass' if q.trend_template and q.trend_template.all_pass else 'fail' }}">{{ 'PASS' if q.trend_template and q.trend_template.all_pass else 'FAIL' }}</td>
         <td class="{{ 'pass' if q.vcp and q.vcp.is_vcp else 'fail' }}">{{ 'YES' if q.vcp and q.vcp.is_vcp else 'NO' }}</td>
