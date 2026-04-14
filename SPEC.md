@@ -215,10 +215,10 @@ data/
 |---|---|---|---|
 | 1 | FCF Margin 當前 | **> 10%** | `fcf_margin > 0.10` |
 | 2 | ROIC 當前 | **> 15%** | `roic > 0.15` |
-| 3 | EPS CAGR 未來 2 年 | **> 20%** | `eps_cagr_2y_fwd > 0.20` |
+| 3 | EPS CAGR 未來 2 年 | **> 15%** | `eps_cagr_2y_fwd > 0.15`（決策 17 校準） |
 | 4 | 過去 3 年 EPS CAGR | **> 15%** | `eps_cagr_3y_trail > 0.15` |
 | 5 | PEG | **< 2** | `trailingPegRatio < 2.0` |
-| 6 | D/E | **< 0.7** | `debtToEquity / 100 < 0.7` |
+| 6 | D/E 或 Net Debt/EBITDA | **D/E < 0.7 OR ND/EBITDA < 3.0** | 決策 19：避免回購型公司誤殺 |
 
 ### 3.2 MLB 品質加分（6 項，合計 80 分）
 
@@ -287,10 +287,16 @@ def gm_trend_score(annual_gm_series: pd.Series) -> tuple[int, dict]:
 |---|---|---|---|
 | 1 | FCF Margin 當前 | **> 0%** | 不燒錢 |
 | 2 | ROIC 當前 | **> 5%** 或改善中 | 寬鬆門檻 |
-| 3 | EPS CAGR 未來 2 年 | **> 30%** | 加速度必須更強 |
-| 4 | 過去 3 年 EPS CAGR | **> 25%** | 已有加速軌跡 |
+| 3 | EPS CAGR 未來 2 年 | **> 30%** 或 turnaround 路徑 | 加速度必須更強（決策 18） |
+| 4 | 過去 3 年 EPS CAGR | **> 25%** 或 turnaround 路徑 | 已有加速軌跡（決策 18） |
 | 5 | PEG | **< 2** | 同 MLB |
-| 6 | D/E | **< 0.7** | 同 MLB |
+| 6 | D/E 或 Net Debt/EBITDA | **D/E < 0.7 OR ND/EBITDA < 3.0** | 同 MLB（決策 19） |
+
+**3A Turnaround 路徑**（決策 18）：當 trailing EPS ≤ 0 或基期 EPS ≤ 0 導致 CAGR 無法計算時，改用以下條件替代條件 3+4：
+- TTM EPS > 0 或 FY+1 EPS 預估 > 0（已經或即將轉正）
+- FY+2 EPS > FY+1 EPS × 1.30（盈利加速中）
+- 過去 3 年 Revenue CAGR > 25%（營收軌跡驗證成長非幻覺）
+三條全過視為等同於滿足條件 3+4。
 
 ### 3.4 3A 成長證據（至少滿足一條）
 
@@ -1159,6 +1165,36 @@ minervini-quality-backtest/
   2. 系統該做的是「等它重新符合」再給進場訊號，而不是強進
   3. NVDA 這種情況往往是 VCP 底部成型中，等待即可
 - 但留意：若 Phase 1 後觀察到此條件經常卡掉基本面優質且 RS > 80 的股票，重新評估是否加入「Condition 4 彈性」（例如 MA50/MA150 差距 < 1% 視為持平通過）
+
+### 2026-04-14
+
+**決策 17：MLB EPS CAGR 2Y Fwd 門檻 20% → 15%**
+- 觸發：476 支 universe 首次實跑，MLB 只有 5 支。20 支診斷股中 MSFT(17.5%), META(19.9%), V(19.4%), MA(17.1%) 被 20% 門檻擋下
+- 決定：降至 15%，與 3Y trailing 門檻一致
+- 理由：
+  1. 2026 年成熟大型股分析師 EPS 年化預估集中在 12-20%，20% 門檻過嚴
+  2. 15% 仍能篩出成長高於市場平均的公司（S&P 500 長期 EPS 成長約 7-10%）
+  3. 與 trailing 3Y CAGR 15% 對稱，邏輯一致
+- 影響：預期 MLB 池從 5 支擴大至 20-40 支
+
+**決策 18：3A 引入 Turnaround 路徑**
+- 觸發：10 支 3A 診斷股中 9 支因 trailing EPS ≤ 0 導致 CAGR=None 被淘汰（CRWD, NET, DDOG, MDB, SNOW 等）
+- 現象：高成長 SaaS 公司從虧損轉盈利，CAGR 公式在負基期數學上無法計算
+- 決定：新增 turnaround 替代路徑，三條件全過可替代條件 3+4
+- 理由：
+  1. CAGR 公式的數學限制不應系統性排除虧損轉盈利的高成長公司
+  2. Revenue CAGR > 25% 確保不是單靠會計手段轉正
+  3. FY+2 > FY+1 × 1.30 確保盈利加速而非一次性
+- 影響：預期 3A 池從 0 支增至 5-15 支
+
+**決策 19：D/E 加入 Net Debt/EBITDA 替代**
+- 觸發：AAPL(D/E 1.03), MA(2.56), LLY(1.65) 因高 D/E 被淘汰，但實際原因是大量股票回購壓低 equity
+- 決定：D/E < 0.7 OR Net Debt/EBITDA < 3.0，滿足任一即通過
+- 理由：
+  1. D/E 對回購型公司（equity 接近零或為負）不公平
+  2. Net Debt/EBITDA 更能反映真實償債能力（現金充裕的回購型公司 ND/EBITDA 可能為負）
+  3. 3.0x 門檻是投資級公司的合理上限
+- 影響：AAPL（Net Debt 為負）、MA 等回購型公司可通過
 
 ---
 

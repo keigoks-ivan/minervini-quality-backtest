@@ -401,3 +401,81 @@ def revenue_series(annual_income: pd.DataFrame) -> pd.Series | None:
         return None
     valid = rev_row.dropna().astype(float)
     return valid if len(valid) > 0 else None
+
+
+# ---------------------------------------------------------------------------
+# Net Debt / EBITDA (Decision 19)
+# ---------------------------------------------------------------------------
+
+def net_debt_to_ebitda(info: dict, quarterly_income: pd.DataFrame) -> float | None:
+    """Net Debt / TTM EBITDA.
+
+    Net Debt = Total Debt - Total Cash. Can be negative (cash > debt).
+    EBITDA from TTM (last 4 quarters EBITDA summed).
+
+    Returns:
+        Ratio as float (can be negative if net-cash), or None if data missing.
+    """
+    total_debt = info.get("totalDebt")
+    total_cash = info.get("totalCash")
+    if total_debt is None or total_cash is None:
+        return None
+
+    net_debt = total_debt - total_cash
+
+    # TTM EBITDA from quarterly income
+    ebitda_row = _safe_row(quarterly_income, "EBITDA")
+    if ebitda_row is None:
+        # Fallback: Operating Income + D&A
+        op_row = _safe_row(quarterly_income, "Operating Income", "EBIT")
+        da_row = _safe_row(
+            quarterly_income,
+            "Reconciled Depreciation",
+            "Depreciation And Amortization",
+            "Depreciation Amortization Depletion",
+        )
+        if op_row is None:
+            return None
+        valid_cols = op_row.dropna().index.sort_values(ascending=False)
+        if len(valid_cols) < 4:
+            return None
+        ttm_cols = valid_cols[:4]
+        ttm_op = op_row[ttm_cols].astype(float).sum()
+        ttm_da = 0
+        if da_row is not None:
+            da_vals = da_row.reindex(ttm_cols).dropna()
+            ttm_da = da_vals.astype(float).sum() if len(da_vals) > 0 else 0
+        ebitda = ttm_op + ttm_da
+    else:
+        valid_cols = ebitda_row.dropna().index.sort_values(ascending=False)
+        if len(valid_cols) < 4:
+            return None
+        ebitda = ebitda_row[valid_cols[:4]].astype(float).sum()
+
+    if ebitda <= 0:
+        return None  # Negative EBITDA makes the ratio meaningless
+
+    return net_debt / ebitda
+
+
+# ---------------------------------------------------------------------------
+# Revenue CAGR 3Y (for turnaround path, Decision 18)
+# ---------------------------------------------------------------------------
+
+def revenue_cagr_3y(annual_income: pd.DataFrame) -> float | None:
+    """Trailing 3-year Revenue CAGR.
+
+    Returns:
+        CAGR as decimal, or None if data insufficient.
+    """
+    rev_row = _safe_row(annual_income, "Total Revenue")
+    if rev_row is None:
+        return None
+    valid = rev_row.dropna()
+    if len(valid) < 4:
+        return None
+    latest = float(valid.iloc[0])
+    three_ago = float(valid.iloc[3])
+    if three_ago <= 0:
+        return None
+    return (latest / three_ago) ** (1 / 3) - 1

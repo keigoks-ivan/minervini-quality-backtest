@@ -97,13 +97,26 @@ def _run_hard_filter(
         "lt",
     )
 
-    # 6. D/E
-    details["debt_to_equity"] = _check(
-        "debt_to_equity",
-        metrics.debt_to_equity(info),
-        params["debt_to_equity_max"],
-        "lt",
-    )
+    # 6. D/E OR Net Debt/EBITDA (Decision 19)
+    de_value = metrics.debt_to_equity(info)
+    de_pass = de_value is not None and de_value < params["debt_to_equity_max"]
+
+    nd_ebitda_max = params.get("net_debt_to_ebitda_max", 3.0)
+    q_inc = ticker_data.get("quarterly", {}).get("income_stmt", pd.DataFrame())
+    nd_ebitda = metrics.net_debt_to_ebitda(info, q_inc)
+    nd_pass = nd_ebitda is not None and nd_ebitda < nd_ebitda_max
+
+    leverage_pass = de_pass or nd_pass
+    details["debt_to_equity"] = {
+        "value": round(de_value, 6) if de_value is not None else None,
+        "threshold": params["debt_to_equity_max"],
+        "op": "lt",
+        "pass": leverage_pass,
+        "de_pass": de_pass,
+        "nd_ebitda": round(nd_ebitda, 4) if nd_ebitda is not None else None,
+        "nd_ebitda_max": nd_ebitda_max,
+        "nd_pass": nd_pass,
+    }
 
     all_passed = all(d["pass"] for d in details.values())
     return all_passed, details
@@ -127,16 +140,97 @@ def passes_mlb_hard_filter(
 def passes_3a_hard_filter(
     ticker_data: dict, params: dict
 ) -> tuple[bool, dict]:
-    """Check if ticker passes all 6 3A hard-filter conditions (SPEC 3.3).
+    """Check if ticker passes 3A hard-filter conditions (SPEC 3.3).
 
-    Args:
-        ticker_data: Raw data dict from yf_loader.
-        params: quality_filter.triple_a block from params.yaml.
+    Includes turnaround path (Decision 18): when EPS CAGR conditions fail
+    due to negative base EPS, a turnaround alternative is checked.
 
     Returns:
         (passed: bool, details: dict with per-condition breakdown)
     """
-    return _run_hard_filter(ticker_data, params)
+    passed, details = _run_hard_filter(ticker_data, params)
+    if passed:
+        return True, details
+
+    # Check if turnaround path can rescue EPS CAGR failures
+    eps_fwd_fail = not details["eps_cagr_2y_fwd"]["pass"]
+    eps_trail_fail = not details["eps_cagr_3y_trail"]["pass"]
+    eps_fwd_none = details["eps_cagr_2y_fwd"]["value"] is None
+    eps_trail_none = details["eps_cagr_3y_trail"]["value"] is None
+
+    # Only try turnaround if EPS conditions failed due to None (negative base)
+    if (eps_fwd_fail or eps_trail_fail) and (eps_fwd_none or eps_trail_none):
+        ta_pass, ta_details = _check_turnaround(ticker_data)
+        details["turnaround"] = ta_details
+        if ta_pass:
+            # Override EPS conditions
+            if eps_fwd_none:
+                details["eps_cagr_2y_fwd"]["pass"] = True
+                details["eps_cagr_2y_fwd"]["turnaround"] = True
+            if eps_trail_none:
+                details["eps_cagr_3y_trail"]["pass"] = True
+                details["eps_cagr_3y_trail"]["turnaround"] = True
+            # Re-check overall
+            all_passed = all(d["pass"] for d in details.values() if isinstance(d, dict) and "pass" in d)
+            return all_passed, details
+
+    return passed, details
+
+
+def _check_turnaround(ticker_data: dict) -> tuple[bool, dict]:
+    """Check turnaround path for 3A (Decision 18).
+
+    Three conditions, all must pass:
+    1. TTM EPS > 0 or FY+1 estimate > 0
+    2. FY+2 estimate > FY+1 estimate × 1.30
+    3. Revenue CAGR 3Y > 25%
+    """
+    details: dict = {}
+
+    inc = ticker_data["annual"]["income_stmt"]
+    estimates = ticker_data.get("estimates")
+    eps_ttm = metrics.get_latest_eps_ttm(inc)
+
+    # FY+1 and FY+2 estimates
+    est_fy1 = None
+    est_fy2 = None
+    if estimates is not None and not estimates.empty:
+        if "0y" in estimates.index:
+            est_fy1 = estimates.loc["0y", "avg"]
+        if "+1y" in estimates.index:
+            est_fy2 = estimates.loc["+1y", "avg"]
+
+    # Condition 1: EPS turning positive
+    eps_positive = (eps_ttm is not None and eps_ttm > 0) or (est_fy1 is not None and est_fy1 > 0)
+    details["eps_turning_positive"] = {
+        "pass": eps_positive,
+        "eps_ttm": round(eps_ttm, 4) if eps_ttm is not None else None,
+        "est_fy1": round(float(est_fy1), 4) if est_fy1 is not None else None,
+    }
+
+    # Condition 2: Earnings acceleration
+    earnings_accel = False
+    if est_fy1 is not None and est_fy2 is not None and est_fy1 > 0:
+        earnings_accel = est_fy2 > est_fy1 * 1.30
+    details["earnings_acceleration"] = {
+        "pass": earnings_accel,
+        "est_fy1": round(float(est_fy1), 4) if est_fy1 is not None else None,
+        "est_fy2": round(float(est_fy2), 4) if est_fy2 is not None else None,
+        "threshold": "FY+2 > FY+1 × 1.30",
+    }
+
+    # Condition 3: Revenue CAGR 3Y > 25%
+    rev_cagr = metrics.revenue_cagr_3y(inc)
+    rev_cagr_pass = rev_cagr is not None and rev_cagr > 0.25
+    details["revenue_cagr_3y"] = {
+        "pass": rev_cagr_pass,
+        "value": round(rev_cagr, 4) if rev_cagr is not None else None,
+        "threshold": 0.25,
+    }
+
+    all_pass = eps_positive and earnings_accel and rev_cagr_pass
+    details["all_pass"] = all_pass
+    return all_pass, details
 
 
 def has_growth_evidence(ticker_data: dict) -> tuple[bool, dict]:
