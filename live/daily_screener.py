@@ -315,7 +315,11 @@ header nav a.active{color:#fff;border-bottom-color:#3b82f6}
 table{width:100%;border-collapse:collapse;font-size:.82rem}
 th{background:#f8fafc;padding:.65rem .85rem;text-align:left;font-weight:600;font-size:.72rem;
    color:var(--muted);text-transform:uppercase;letter-spacing:.04em;
-   border-bottom:1px solid var(--border)}
+   border-bottom:1px solid var(--border);cursor:pointer;user-select:none;
+   white-space:nowrap;transition:color .15s}
+th:hover{color:var(--brand)}
+th .sort-arrow{font-size:.65rem;margin-left:.25rem;opacity:.3}
+th.sort-active .sort-arrow{opacity:1;color:var(--brand)}
 td{padding:.6rem .85rem;border-bottom:1px solid #f1f5f9}
 tr:last-child td{border-bottom:none}
 tr:hover{background:#f8fafc}
@@ -565,6 +569,54 @@ footer a{color:var(--muted)}
     &copy; 2026 InvestMQuest Research
   </div>
 </footer>
+<script>
+(function(){
+  function parseVal(txt){
+    txt=txt.trim();
+    if(txt==='-'||txt==='')return null;
+    var n=parseFloat(txt.replace(/[$,%]/g,''));
+    return isNaN(n)?txt:n;
+  }
+  function sortTable(th,colIdx){
+    var table=th.closest('table'),tbody=table.querySelector('tbody');
+    if(!tbody)return;
+    var rows=Array.from(tbody.querySelectorAll('tr'));
+    var cur=th.dataset.sortDir||'';
+    var dir=(cur==='desc')?'asc':'desc';
+    table.querySelectorAll('th').forEach(function(h){h.classList.remove('sort-active');h.dataset.sortDir='';
+      var a=h.querySelector('.sort-arrow');if(a)a.textContent='\\u2195';});
+    th.dataset.sortDir=dir;th.classList.add('sort-active');
+    var arrow=th.querySelector('.sort-arrow');if(arrow)arrow.textContent=(dir==='desc')?'\\u2193':'\\u2191';
+    rows.sort(function(a,b){
+      var av=parseVal(a.cells[colIdx].textContent);
+      var bv=parseVal(b.cells[colIdx].textContent);
+      if(av===null&&bv===null)return 0;
+      if(av===null)return 1;if(bv===null)return -1;
+      if(typeof av==='string'&&typeof bv==='string'){
+        var c=av.localeCompare(bv);return dir==='asc'?c:-c;
+      }
+      return dir==='asc'?av-bv:bv-av;
+    });
+    rows.forEach(function(r){tbody.appendChild(r);});
+  }
+  document.querySelectorAll('table').forEach(function(table){
+    var ths=table.querySelectorAll('th');
+    ths.forEach(function(th,i){
+      var arrow=document.createElement('span');arrow.className='sort-arrow';arrow.textContent='\\u2195';
+      th.appendChild(arrow);
+      th.addEventListener('click',function(){sortTable(th,i);});
+    });
+    // Default sort: Quality column (index 1) descending
+    if(ths.length>1){
+      var qCol=ths[1];
+      if(qCol.textContent.replace('\\u2195','').trim()==='Quality'){
+        qCol.dataset.sortDir='asc';
+        sortTable(qCol,1);
+      }
+    }
+  });
+})();
+</script>
 </body>
 </html>
 """
