@@ -498,11 +498,11 @@ footer a{color:var(--muted)}
       <tr>
         <td class="ticker">{{ q.ticker }}</td>
         <td>{{ "%.1f"|format(q.quality_score) }}/80</td>
-        <td class="num">{% if q.hard_filter_details.eps_cagr_2y_fwd %}{{ "%.0f"|format(q.hard_filter_details.eps_cagr_2y_fwd.value * 100) }}%{% else %}-{% endif %}</td>
-        <td class="num">{% if q.hard_filter_details.roic %}{{ "%.0f"|format(q.hard_filter_details.roic.value * 100) }}%{% else %}-{% endif %}</td>
-        <td class="num">{% if q.hard_filter_details.fcf_margin %}{{ "%.0f"|format(q.hard_filter_details.fcf_margin.value * 100) }}%{% else %}-{% endif %}</td>
-        <td class="num">{% if q.hard_filter_details.peg %}{{ "%.1f"|format(q.hard_filter_details.peg.value) }}{% else %}-{% endif %}</td>
-        <td class="num">{% if q.hard_filter_details.debt_to_equity %}{{ "%.2f"|format(q.hard_filter_details.debt_to_equity.value) }}{% else %}-{% endif %}</td>
+        <td class="num">{% if q.hard_filter_details.eps_cagr_2y_fwd and q.hard_filter_details.eps_cagr_2y_fwd.value is not none %}{{ "%.0f"|format(q.hard_filter_details.eps_cagr_2y_fwd.value * 100) }}%{% else %}-{% endif %}</td>
+        <td class="num">{% if q.hard_filter_details.roic and q.hard_filter_details.roic.value is not none %}{{ "%.0f"|format(q.hard_filter_details.roic.value * 100) }}%{% else %}-{% endif %}</td>
+        <td class="num">{% if q.hard_filter_details.fcf_margin and q.hard_filter_details.fcf_margin.value is not none %}{{ "%.0f"|format(q.hard_filter_details.fcf_margin.value * 100) }}%{% else %}-{% endif %}</td>
+        <td class="num">{% if q.hard_filter_details.peg and q.hard_filter_details.peg.value is not none %}{{ "%.1f"|format(q.hard_filter_details.peg.value) }}{% else %}-{% endif %}</td>
+        <td class="num">{% if q.hard_filter_details.debt_to_equity and q.hard_filter_details.debt_to_equity.value is not none %}{{ "%.2f"|format(q.hard_filter_details.debt_to_equity.value) }}{% else %}-{% endif %}</td>
         <td class="num">{{ q.rs_rating or '-' }}</td>
         <td class="{{ 'pass' if q.trend_template and q.trend_template.all_pass else 'fail' }}">{{ 'PASS' if q.trend_template and q.trend_template.all_pass else 'FAIL' }}</td>
         <td class="{{ 'pass' if q.vcp and q.vcp.is_vcp else 'fail' }}">{{ 'YES' if q.vcp and q.vcp.is_vcp else 'NO' }}</td>
@@ -536,11 +536,11 @@ footer a{color:var(--muted)}
       <tr>
         <td class="ticker">{{ q.ticker }}</td>
         <td>{{ "%.1f"|format(q.quality_score) }}/80</td>
-        <td class="num">{% if q.hard_filter_details.eps_cagr_2y_fwd %}{{ "%.0f"|format(q.hard_filter_details.eps_cagr_2y_fwd.value * 100) }}%{% else %}-{% endif %}</td>
-        <td class="num">{% if q.hard_filter_details.roic %}{{ "%.0f"|format(q.hard_filter_details.roic.value * 100) }}%{% else %}-{% endif %}</td>
-        <td class="num">{% if q.hard_filter_details.fcf_margin %}{{ "%.0f"|format(q.hard_filter_details.fcf_margin.value * 100) }}%{% else %}-{% endif %}</td>
-        <td class="num">{% if q.hard_filter_details.peg %}{{ "%.1f"|format(q.hard_filter_details.peg.value) }}{% else %}-{% endif %}</td>
-        <td class="num">{% if q.hard_filter_details.debt_to_equity %}{{ "%.2f"|format(q.hard_filter_details.debt_to_equity.value) }}{% else %}-{% endif %}</td>
+        <td class="num">{% if q.hard_filter_details.eps_cagr_2y_fwd and q.hard_filter_details.eps_cagr_2y_fwd.value is not none %}{{ "%.0f"|format(q.hard_filter_details.eps_cagr_2y_fwd.value * 100) }}%{% else %}-{% endif %}</td>
+        <td class="num">{% if q.hard_filter_details.roic and q.hard_filter_details.roic.value is not none %}{{ "%.0f"|format(q.hard_filter_details.roic.value * 100) }}%{% else %}-{% endif %}</td>
+        <td class="num">{% if q.hard_filter_details.fcf_margin and q.hard_filter_details.fcf_margin.value is not none %}{{ "%.0f"|format(q.hard_filter_details.fcf_margin.value * 100) }}%{% else %}-{% endif %}</td>
+        <td class="num">{% if q.hard_filter_details.peg and q.hard_filter_details.peg.value is not none %}{{ "%.1f"|format(q.hard_filter_details.peg.value) }}{% else %}-{% endif %}</td>
+        <td class="num">{% if q.hard_filter_details.debt_to_equity and q.hard_filter_details.debt_to_equity.value is not none %}{{ "%.2f"|format(q.hard_filter_details.debt_to_equity.value) }}{% else %}-{% endif %}</td>
         <td class="num">{{ q.rs_rating or '-' }}</td>
         <td class="{{ 'pass' if q.trend_template and q.trend_template.all_pass else 'fail' }}">{{ 'PASS' if q.trend_template and q.trend_template.all_pass else 'FAIL' }}</td>
         <td class="{{ 'pass' if q.vcp and q.vcp.is_vcp else 'fail' }}">{{ 'YES' if q.vcp and q.vcp.is_vcp else 'NO' }}</td>
