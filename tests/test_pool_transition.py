@@ -80,7 +80,6 @@ def _make_mock_ticker_data(
     analyst_count: int = 30,
     peg: float = 1.5,
     eps_cagr_fwd: float = 0.25,
-    eps_cagr_trail: float = 0.20,
 ) -> dict:
     """Build a minimal ticker_data dict with controllable quarterly metrics.
 
@@ -149,11 +148,10 @@ def _make_mock_ticker_data(
     }).T
     a_cashflow.columns = annual_dates
 
-    # Diluted EPS for trailing CAGR
+    # Diluted EPS (kept for other metrics that may read it)
     eps_latest = 5.0
-    eps_3y = eps_latest / ((1 + eps_cagr_trail) ** 3)
     eps_row = pd.Series(
-        [eps_latest, eps_latest * 0.8, eps_latest * 0.6, eps_3y],
+        [eps_latest, eps_latest * 0.8, eps_latest * 0.6, eps_latest * 0.5],
         index=dates[:4],
         name="Diluted EPS",
     )

@@ -81,15 +81,7 @@ def _run_hard_filter(
         "gt",
     )
 
-    # 4. EPS CAGR 3Y Trailing
-    details["eps_cagr_3y_trail"] = _check(
-        "eps_cagr_3y_trail",
-        metrics.eps_cagr_3y_trailing(inc),
-        params["eps_cagr_3y_trail_min"],
-        "gt",
-    )
-
-    # 5. PEG
+    # 4. PEG
     details["peg"] = _check(
         "peg",
         metrics.peg_ratio(info),
@@ -97,7 +89,7 @@ def _run_hard_filter(
         "lt",
     )
 
-    # 6. D/E OR Net Debt/EBITDA (Decision 19)
+    # 5. D/E OR Net Debt/EBITDA (Decision 19)
     de_value = metrics.debt_to_equity(info)
     de_pass = de_value is not None and de_value < params["debt_to_equity_max"]
 
@@ -125,7 +117,7 @@ def _run_hard_filter(
 def passes_mlb_hard_filter(
     ticker_data: dict, params: dict
 ) -> tuple[bool, dict]:
-    """Check if ticker passes all 6 MLB hard-filter conditions (SPEC 3.1).
+    """Check if ticker passes all 5 MLB hard-filter conditions (SPEC 3.1).
 
     Args:
         ticker_data: Raw data dict from yf_loader.
@@ -154,22 +146,15 @@ def passes_3a_hard_filter(
 
     # Check if turnaround path can rescue EPS CAGR failures
     eps_fwd_fail = not details["eps_cagr_2y_fwd"]["pass"]
-    eps_trail_fail = not details["eps_cagr_3y_trail"]["pass"]
     eps_fwd_none = details["eps_cagr_2y_fwd"]["value"] is None
-    eps_trail_none = details["eps_cagr_3y_trail"]["value"] is None
 
-    # Only try turnaround if EPS conditions failed due to None (negative base)
-    if (eps_fwd_fail or eps_trail_fail) and (eps_fwd_none or eps_trail_none):
+    # Only try turnaround if EPS forward failed due to None (negative base)
+    if eps_fwd_fail and eps_fwd_none:
         ta_pass, ta_details = _check_turnaround(ticker_data, params)
         details["turnaround"] = ta_details
         if ta_pass:
-            # Override EPS conditions
-            if eps_fwd_none:
-                details["eps_cagr_2y_fwd"]["pass"] = True
-                details["eps_cagr_2y_fwd"]["turnaround"] = True
-            if eps_trail_none:
-                details["eps_cagr_3y_trail"]["pass"] = True
-                details["eps_cagr_3y_trail"]["turnaround"] = True
+            details["eps_cagr_2y_fwd"]["pass"] = True
+            details["eps_cagr_2y_fwd"]["turnaround"] = True
             # Re-check overall
             all_passed = all(d["pass"] for d in details.values() if isinstance(d, dict) and "pass" in d)
             return all_passed, details

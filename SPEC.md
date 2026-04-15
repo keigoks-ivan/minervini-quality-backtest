@@ -82,7 +82,7 @@ QGM 嘗試整合兩者：**用品質作為護欄、用技術抓時機**。品質
 
 **排除規則**：
 - SPAC、REIT、ADR（財務結構與一般企業不同）
-- 上市未滿 3 年（資料不足計算過去 3 年 EPS CAGR）
+- 上市未滿 3 年（資料不足）
 - 市值 < $2B（流動性不足）
 
 ### 2.3 所需資料欄位清單
@@ -151,7 +151,6 @@ QGM 嘗試整合兩者：**用品質作為護欄、用技術抓時機**。品質
 | `fcf_margin` | `freeCashflow / totalRevenue` |
 | `roic` | `(operating_income × (1 - 0.21)) / (total_debt + stockholders_equity)` |
 | `eps_cagr_2y_fwd` | `(eps_fy2 / eps_ttm)^(1/2) - 1` |
-| `eps_cagr_3y_trail` | `(eps_ttm / eps_3y_ago)^(1/3) - 1` |
 | `gross_margin` | `gross_profit / total_revenue` |
 | `capex_intensity_5y` | 5 年平均 `capex / revenue` |
 | `rs_rating` | IBD 加權公式 percentile rank |
@@ -209,16 +208,15 @@ data/
 
 ## 3. 品質篩選層規格
 
-### 3.1 MLB 硬篩（6 條，全過才入 MLB 池）
+### 3.1 MLB 硬篩（5 條，全過才入 MLB 池）
 
 | # | 條件 | 閾值 | 計算 |
 |---|---|---|---|
 | 1 | FCF Margin 當前 | **> 10%** | `fcf_margin > 0.10` |
 | 2 | ROIC 當前 | **> 15%** | `roic > 0.15` |
 | 3 | EPS CAGR 未來 2 年 | **> 15%** | `eps_cagr_2y_fwd > 0.15`（決策 17 校準） |
-| 4 | 過去 3 年 EPS CAGR | **> 15%** | `eps_cagr_3y_trail > 0.15` |
-| 5 | PEG | **< 2** | `trailingPegRatio < 2.0` |
-| 6 | D/E 或 Net Debt/EBITDA | **D/E < 0.7 OR ND/EBITDA < 3.0** | 決策 19：避免回購型公司誤殺 |
+| 4 | PEG | **< 2** | `trailingPegRatio < 2.0` |
+| 5 | D/E 或 Net Debt/EBITDA | **D/E < 0.7 OR ND/EBITDA < 3.0** | 決策 19：避免回購型公司誤殺 |
 
 ### 3.2 MLB 品質加分（6 項，合計 80 分）
 
@@ -288,15 +286,14 @@ def gm_trend_score(annual_gm_series: pd.Series) -> tuple[int, dict]:
 | 1 | FCF Margin 當前 | **> 0%** | 不燒錢 |
 | 2 | ROIC 當前 | **> 5%** 或改善中 | 寬鬆門檻 |
 | 3 | EPS CAGR 未來 2 年 | **> 30%** 或 turnaround 路徑 | 加速度必須更強（決策 18） |
-| 4 | 過去 3 年 EPS CAGR | **> 25%** 或 turnaround 路徑 | 已有加速軌跡（決策 18） |
-| 5 | PEG | **< 2** | 同 MLB |
-| 6 | D/E 或 Net Debt/EBITDA | **D/E < 0.7 OR ND/EBITDA < 3.0** | 同 MLB（決策 19） |
+| 4 | PEG | **< 2** | 同 MLB |
+| 5 | D/E 或 Net Debt/EBITDA | **D/E < 0.7 OR ND/EBITDA < 3.0** | 同 MLB（決策 19） |
 
-**3A Turnaround 路徑**（決策 18）：當 trailing EPS ≤ 0 或基期 EPS ≤ 0 導致 CAGR 無法計算時，改用以下條件替代條件 3+4：
+**3A Turnaround 路徑**（決策 18）：當基期 EPS ≤ 0 導致前瞻 CAGR 無法計算時，改用以下條件替代條件 3：
 - TTM EPS > 0 或 FY+1 EPS 預估 > 0（已經或即將轉正）
 - FY+2 EPS > FY+1 EPS × 1.25（盈利加速中，決策 21 校準）
 - 過去 3 年 Revenue CAGR > 25%（營收軌跡驗證成長非幻覺）
-三條全過視為等同於滿足條件 3+4。
+三條全過視為等同於滿足條件 3。
 
 ### 3.4 3A 成長證據（至少滿足一條）
 
@@ -509,14 +506,12 @@ quality_filter:
     fcf_margin_min: 0.10
     roic_min: 0.15
     eps_cagr_2y_fwd_min: 0.20
-    eps_cagr_3y_trail_min: 0.15
     peg_max: 2.0
     debt_to_equity_max: 0.7
   triple_a:
     fcf_margin_min: 0.0
     roic_min: 0.05
     eps_cagr_2y_fwd_min: 0.30
-    eps_cagr_3y_trail_min: 0.25
     peg_max: 2.0
     debt_to_equity_max: 0.7
 

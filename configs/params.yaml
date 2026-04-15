@@ -3,7 +3,6 @@ quality_filter:
     fcf_margin_min: 0.10
     roic_min: 0.15
     eps_cagr_2y_fwd_min: 0.15
-    eps_cagr_3y_trail_min: 0.15
     peg_max: 2.0
     debt_to_equity_max: 0.7
     net_debt_to_ebitda_max: 3.0
@@ -11,7 +10,6 @@ quality_filter:
     fcf_margin_min: 0.0
     roic_min: 0.05
     eps_cagr_2y_fwd_min: 0.30
-    eps_cagr_3y_trail_min: 0.25
     peg_max: 2.0
     debt_to_equity_max: 0.7
     net_debt_to_ebitda_max: 3.0

@@ -483,7 +483,6 @@ footer a{color:var(--muted)}
         <li><strong>FCF Margin</strong> &ge; 10% — 自由現金流佔營收比例</li>
         <li><strong>ROIC</strong> &ge; 15% — 投入資本回報率</li>
         <li><strong>EPS CAGR 前瞻 2 年</strong> &ge; 15% — 分析師預估盈餘年複合成長</li>
-        <li><strong>EPS CAGR 回顧 3 年</strong> &ge; 15% — 過去實際盈餘年複合成長</li>
         <li><strong>PEG</strong> &le; 2.0 — 本益比相對成長率的合理性</li>
         <li><strong>D/E</strong> &le; 0.7 — 負債權益比（財務槓桿控制）</li>
       </ul>
@@ -520,8 +519,6 @@ footer a{color:var(--muted)}
       潛力加速股 — 高成長但不確定性較高，技術門檻更嚴格，部位更小、停損更緊：
       <ul>
         <li><strong>EPS CAGR 前瞻 2 年</strong> &ge; 30% — 分析師預估盈餘高速成長</li>
-        <li><strong>EPS CAGR 回顧 3 年</strong> &ge; 25% — 過去實際盈餘高速成長</li>
-        <li><strong>盈餘加速度</strong> &ge; 1.25x — 前瞻成長率 / 回顧成長率，確認加速中</li>
         <li><strong>FCF Margin</strong> &ge; 0% — 較寬鬆底線（允許高投資期）</li>
         <li><strong>ROIC</strong> &ge; 5% — 較寬鬆底線</li>
         <li><strong>PEG</strong> &le; 2.0, <strong>D/E</strong> &le; 0.7 — 同 MLB</li>
