@@ -413,7 +413,7 @@ footer a{color:var(--muted)}
     <div class="table-wrap">
     <table>
       <thead><tr>
-        <th>Ticker</th><th>Pool</th><th>Quality</th><th class="num">RS</th><th class="num">Price</th>
+        <th>Ticker</th><th>Pool</th><th>Quality</th><th class="num">EPS Fwd</th><th class="num">ROIC</th><th class="num">FCF%</th><th class="num">PEG</th><th class="num">D/E</th><th class="num">RS</th><th class="num">Price</th>
         <th class="num">Pivot</th><th class="num">Vol Ratio</th><th class="num">Drawdown</th>
       </tr></thead>
       <tbody>
@@ -422,6 +422,11 @@ footer a{color:var(--muted)}
         <td class="ticker">{{ c.ticker }}</td>
         <td><span class="pool-{{ c.pool|lower }}">{{ c.pool }}</span></td>
         <td>{{ "%.1f"|format(c.quality_score) }}/80</td>
+        <td class="num">{% if c.hard_filter_details.eps_cagr_2y_fwd and c.hard_filter_details.eps_cagr_2y_fwd.value is not none %}{{ "%.0f"|format(c.hard_filter_details.eps_cagr_2y_fwd.value * 100) }}%{% else %}-{% endif %}</td>
+        <td class="num">{% if c.hard_filter_details.roic and c.hard_filter_details.roic.value is not none %}{{ "%.0f"|format(c.hard_filter_details.roic.value * 100) }}%{% else %}-{% endif %}</td>
+        <td class="num">{% if c.hard_filter_details.fcf_margin and c.hard_filter_details.fcf_margin.value is not none %}{{ "%.0f"|format(c.hard_filter_details.fcf_margin.value * 100) }}%{% else %}-{% endif %}</td>
+        <td class="num">{% if c.hard_filter_details.peg and c.hard_filter_details.peg.value is not none %}{{ "%.1f"|format(c.hard_filter_details.peg.value) }}{% else %}-{% endif %}</td>
+        <td class="num">{% if c.hard_filter_details.debt_to_equity and c.hard_filter_details.debt_to_equity.value is not none %}{{ "%.2f"|format(c.hard_filter_details.debt_to_equity.value) }}{% else %}-{% endif %}</td>
         <td class="num">{{ c.rs_rating or '-' }}</td>
         <td class="num">${{ "%.2f"|format(c.price) if c.price else '-' }}</td>
         <td class="num">${{ "%.2f"|format(c.vcp.pivot_price) if c.vcp else '-' }}</td>
@@ -452,7 +457,7 @@ footer a{color:var(--muted)}
     <div class="table-wrap">
     <table>
       <thead><tr>
-        <th>Ticker</th><th>Pool</th><th>Quality</th><th class="num">RS</th><th class="num">Price</th>
+        <th>Ticker</th><th>Pool</th><th>Quality</th><th class="num">EPS Fwd</th><th class="num">ROIC</th><th class="num">FCF%</th><th class="num">PEG</th><th class="num">D/E</th><th class="num">RS</th><th class="num">Price</th>
         <th>VCP</th><th class="num">Vol Ratio</th>
       </tr></thead>
       <tbody>
@@ -461,6 +466,11 @@ footer a{color:var(--muted)}
         <td class="ticker">{{ w.ticker }}</td>
         <td><span class="pool-{{ w.pool|lower }}">{{ w.pool }}</span></td>
         <td>{{ "%.1f"|format(w.quality_score) }}/80</td>
+        <td class="num">{% if w.hard_filter_details.eps_cagr_2y_fwd and w.hard_filter_details.eps_cagr_2y_fwd.value is not none %}{{ "%.0f"|format(w.hard_filter_details.eps_cagr_2y_fwd.value * 100) }}%{% else %}-{% endif %}</td>
+        <td class="num">{% if w.hard_filter_details.roic and w.hard_filter_details.roic.value is not none %}{{ "%.0f"|format(w.hard_filter_details.roic.value * 100) }}%{% else %}-{% endif %}</td>
+        <td class="num">{% if w.hard_filter_details.fcf_margin and w.hard_filter_details.fcf_margin.value is not none %}{{ "%.0f"|format(w.hard_filter_details.fcf_margin.value * 100) }}%{% else %}-{% endif %}</td>
+        <td class="num">{% if w.hard_filter_details.peg and w.hard_filter_details.peg.value is not none %}{{ "%.1f"|format(w.hard_filter_details.peg.value) }}{% else %}-{% endif %}</td>
+        <td class="num">{% if w.hard_filter_details.debt_to_equity and w.hard_filter_details.debt_to_equity.value is not none %}{{ "%.2f"|format(w.hard_filter_details.debt_to_equity.value) }}{% else %}-{% endif %}</td>
         <td class="num">{{ w.rs_rating or '-' }}</td>
         <td class="num">${{ "%.2f"|format(w.price) if w.price else '-' }}</td>
         <td class="{{ 'pass' if w.vcp and w.vcp.is_vcp else 'fail' }}">{{ 'YES' if w.vcp and w.vcp.is_vcp else 'NO' }}</td>
