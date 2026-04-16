@@ -218,11 +218,16 @@ def gross_margin_current(income_stmt: pd.DataFrame) -> float | None:
 # 6. PEG Ratio
 # ---------------------------------------------------------------------------
 
-def peg_ratio(info: dict) -> float | None:
+def peg_ratio(info: dict, growth_rate: float | None = None) -> float | None:
     """PEG ratio from info snapshot.
 
-    Prefers trailingPegRatio. Falls back to forwardPE / (growth * 100)
-    if trailingPegRatio is missing.
+    Prefers trailingPegRatio. Falls back to forwardPE / (growth_rate × 100)
+    when growth_rate is provided (e.g., eps_cagr_2y_fwd).
+
+    Args:
+        info: yfinance info dict.
+        growth_rate: Forward EPS growth rate as decimal (e.g., 0.15 for 15%)
+            used to compute fallback PEG when trailingPegRatio is None.
 
     Returns:
         PEG ratio as float, or None if unavailable.
@@ -230,6 +235,14 @@ def peg_ratio(info: dict) -> float | None:
     peg = info.get("trailingPegRatio")
     if peg is not None and not (isinstance(peg, float) and np.isnan(peg)):
         return peg
+    fwd_pe = info.get("forwardPE")
+    if (
+        fwd_pe is not None
+        and growth_rate is not None
+        and growth_rate > 0
+        and not (isinstance(fwd_pe, float) and np.isnan(fwd_pe))
+    ):
+        return fwd_pe / (growth_rate * 100)
     return None
 
 

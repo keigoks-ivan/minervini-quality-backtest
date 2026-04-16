@@ -254,4 +254,4 @@ class TestFilter:
         assert stats["low_market_cap"] == 1
         assert stats["low_analyst_coverage"] == 1
         assert stats["excluded_type"] == 1
-        assert stats["non_usd"] == 1
+        assert stats["currency_mismatch"] == 1

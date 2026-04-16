@@ -47,6 +47,8 @@ universe:
   min_market_cap_usd: 2000000000
   min_analyst_coverage: 3
   min_listing_years: 3
+  allowed_currencies:
+    - USD
 
 backtest:
   start_date: "2020-01-01"

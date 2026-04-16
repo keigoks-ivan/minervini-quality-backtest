@@ -1,9 +1,10 @@
-"""Universe builder: S&P 500 + NASDAQ 100 from Wikipedia.
+"""Universe builder: S&P 500 + NASDAQ 100 from Wikipedia, TWSE from OpenAPI.
 
 Implements SPEC Section 2.2: stock universe definition, caching, and filtering.
 """
 
 import io
+import json
 import logging
 from datetime import date
 from pathlib import Path
@@ -19,6 +20,7 @@ UNIVERSE_DIR = Path("data/universe")
 
 _SP500_URL = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
 _NDX_URL = "https://en.wikipedia.org/wiki/Nasdaq-100"
+_TWSE_LIST_URL = "https://openapi.twse.com.tw/v1/opendata/t187ap03_L"
 
 
 def _fix_ticker(symbol: str) -> str:
@@ -70,6 +72,29 @@ def fetch_ndx_tickers() -> list[str]:
     raise ValueError("Could not find NASDAQ-100 components table on Wikipedia")
 
 
+def fetch_twse_tickers() -> list[str]:
+    """Fetch TWSE-listed common stocks, excluding financials and non-equity types.
+
+    Pre-filters by industry code (17 = financials) and 4-digit numeric
+    ticker pattern to exclude ETFs, warrants, and preferred shares.
+    Returns tickers with yfinance '.TW' suffix.
+    """
+    req = Request(_TWSE_LIST_URL, headers={"User-Agent": "QGM-TW/1.0"})
+    with urlopen(req, timeout=30) as resp:
+        data = json.loads(resp.read().decode("utf-8"))
+
+    tickers = []
+    for row in data:
+        code = row.get("公司代號", "").strip()
+        industry = row.get("產業別", "").strip()
+        if industry == "17":  # Financials
+            continue
+        if not (len(code) == 4 and code.isdigit()):
+            continue
+        tickers.append(f"{code}.TW")
+    return sorted(set(tickers))
+
+
 # ---------------------------------------------------------------------------
 # Build & cache universe
 # ---------------------------------------------------------------------------
@@ -95,18 +120,27 @@ def build_universe(
     cache_path = Path(cache_dir)
     cache_path.mkdir(parents=True, exist_ok=True)
     month_str = date.today().strftime("%Y-%m")
-    parquet_path = cache_path / f"universe_{month_str}.parquet"
+    cache_key = "_".join(sorted(indexes)).lower()
+    parquet_path = cache_path / f"universe_{cache_key}_{month_str}.parquet"
 
+    # Back-compat: old US cache lacks cache_key prefix
+    legacy_path = cache_path / f"universe_{month_str}.parquet"
     if not force_refresh and parquet_path.exists():
         df = pd.read_parquet(parquet_path)
         tickers = df["ticker"].tolist()
         logger.info("Loaded %d tickers from cache %s", len(tickers), parquet_path)
+        return tickers
+    if not force_refresh and set(indexes) == {"SP500", "NDX"} and legacy_path.exists():
+        df = pd.read_parquet(legacy_path)
+        tickers = df["ticker"].tolist()
+        logger.info("Loaded %d tickers from legacy cache %s", len(tickers), legacy_path)
         return tickers
 
     all_tickers: set[str] = set()
     fetchers = {
         "SP500": fetch_sp500_tickers,
         "NDX": fetch_ndx_tickers,
+        "TWSE": fetch_twse_tickers,
     }
 
     for idx in indexes:
@@ -155,9 +189,11 @@ def filter_universe(
         (filtered_tickers, rejection_stats)
         rejection_stats: {'low_market_cap': 12, 'low_coverage': 3, ...}
     """
-    min_cap = params.get("min_market_cap_usd", 2_000_000_000)
+    # Market cap threshold: prefer market-specific key, fall back to USD
+    min_cap = params.get("min_market_cap", params.get("min_market_cap_usd", 2_000_000_000))
     min_coverage = params.get("min_analyst_coverage", 3)
     min_years = params.get("min_listing_years", 3)
+    allowed_currencies = set(params.get("allowed_currencies", ["USD"]))
 
     excluded_types = {"REIT", "ADR"}
 
@@ -167,7 +203,7 @@ def filter_universe(
         "low_analyst_coverage": 0,
         "short_listing_history": 0,
         "excluded_type": 0,
-        "non_usd": 0,
+        "currency_mismatch": 0,
         "data_error": 0,
         "total_input": len(tickers),
     }
@@ -211,8 +247,8 @@ def filter_universe(
 
         # Currency
         currency = info.get("currency", "USD")
-        if currency != "USD":
-            stats["non_usd"] += 1
+        if currency not in allowed_currencies:
+            stats["currency_mismatch"] += 1
             continue
 
         # Listing years — check via price history length

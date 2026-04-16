@@ -74,17 +74,18 @@ def _run_hard_filter(
 
     # 3. EPS CAGR 2Y Forward
     eps_ttm = metrics.get_latest_eps_ttm(inc)
+    eps_cagr_fwd = metrics.eps_cagr_2y_forward(estimates, eps_ttm)
     details["eps_cagr_2y_fwd"] = _check(
         "eps_cagr_2y_fwd",
-        metrics.eps_cagr_2y_forward(estimates, eps_ttm),
+        eps_cagr_fwd,
         params["eps_cagr_2y_fwd_min"],
         "gt",
     )
 
-    # 4. PEG
+    # 4. PEG — fall back to forwardPE / (eps_cagr × 100) when trailingPegRatio is None
     details["peg"] = _check(
         "peg",
-        metrics.peg_ratio(info),
+        metrics.peg_ratio(info, growth_rate=eps_cagr_fwd),
         params["peg_max"],
         "lt",
     )

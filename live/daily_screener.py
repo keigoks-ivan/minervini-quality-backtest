@@ -50,6 +50,7 @@ def run_daily_screener(
     output_dir: str = "live/output",
     universe_tickers: list[str] | None = None,
     save_snapshots: bool = True,
+    market: str = "us",
 ) -> dict:
     """Execute the full daily screener pipeline.
 
@@ -58,12 +59,14 @@ def run_daily_screener(
         output_dir: Where to save JSON/HTML output.
         universe_tickers: Override universe (for testing). None = full universe.
         save_snapshots: Whether to write output files.
+        market: Market code ('us' or 'tw'). Loads configs/params_{tw|}.yaml.
 
     Returns:
         Result dict with summary, candidates, watch_list, quality_pool.
     """
     if params is None:
-        with open("configs/params.yaml") as f:
+        config_name = "params_tw.yaml" if market == "tw" else "params.yaml"
+        with open(f"configs/{config_name}") as f:
             params = yaml.safe_load(f)
 
     loader = YFinanceSource()
@@ -73,7 +76,7 @@ def run_daily_screener(
 
     # 1. Build universe
     if universe_tickers is None:
-        raw_tickers = build_universe()
+        raw_tickers = build_universe(indexes=params["universe"].get("indexes"))
         tickers, filter_stats = filter_universe(
             raw_tickers, params["universe"], loader
         )
@@ -233,7 +236,7 @@ def run_daily_screener(
     }
 
     if save_snapshots:
-        save_screener_output(result, output_dir)
+        save_screener_output(result, output_dir, market=market)
 
     return result
 
@@ -248,7 +251,7 @@ _HTML_TEMPLATE = """\
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>QGM Screener &middot; {{ date }} — InvestMQuest Research</title>
+  <title>{{ market_title }} &middot; {{ date }} — InvestMQuest Research</title>
   <style>
 :root{--brand:#1a56db;--brand-light:#eff6ff;--brand-dark:#1e40af;--bg:#f9fafb;--card:#fff;
       --text:#111827;--muted:#6b7280;--border:#e5e7eb;
@@ -364,7 +367,8 @@ footer a{color:var(--muted)}
       <a href="/backtest/">回測</a>
       <a href="/research/">研究報告</a>
       <a href="/six-state/">六狀態機</a>
-      <a href="/qgm/" class="active">QGM</a>
+      <a href="/qgm/" class="{{ 'active' if market == 'us' else '' }}">QGM 美股</a>
+      <a href="/qgm-tw/" class="{{ 'active' if market == 'tw' else '' }}">QGM 台股</a>
     </nav>
   </div>
 </header>
@@ -372,8 +376,8 @@ footer a{color:var(--muted)}
 <section class="hero">
   <div class="container">
     <span class="eyebrow">Quality Growth Momentum</span>
-    <h1>QGM Daily Screener</h1>
-    <p class="sub">品質成長動能系統 — 用品質作為護欄、用技術抓時機。每日自動掃描 S&amp;P 500 + NASDAQ 100。</p>
+    <h1>{{ market_title }}</h1>
+    <p class="sub">品質成長動能系統 — 用品質作為護欄、用技術抓時機。每日自動掃描 {{ universe_label }}。</p>
   </div>
 </section>
 
@@ -428,8 +432,8 @@ footer a{color:var(--muted)}
         <td class="num">{% if c.hard_filter_details.peg and c.hard_filter_details.peg.value is not none %}{{ "%.1f"|format(c.hard_filter_details.peg.value) }}{% else %}-{% endif %}</td>
         <td class="num">{% if c.hard_filter_details.debt_to_equity and c.hard_filter_details.debt_to_equity.value is not none %}{{ "%.2f"|format(c.hard_filter_details.debt_to_equity.value) }}{% else %}-{% endif %}</td>
         <td class="num">{{ c.rs_rating or '-' }}</td>
-        <td class="num">${{ "%.2f"|format(c.price) if c.price else '-' }}</td>
-        <td class="num">${{ "%.2f"|format(c.vcp.pivot_price) if c.vcp else '-' }}</td>
+        <td class="num">{{ currency_symbol }}{{ "%.2f"|format(c.price) if c.price else '-' }}</td>
+        <td class="num">{{ currency_symbol }}{{ "%.2f"|format(c.vcp.pivot_price) if c.vcp else '-' }}</td>
         <td class="num">{{ "%.2f"|format(c.vcp.volatility_ratio) if c.vcp else '-' }}</td>
         <td class="num">{{ "%.1f"|format(c.vcp.max_drawdown * 100) if c.vcp else '-' }}%</td>
       </tr>
@@ -472,7 +476,7 @@ footer a{color:var(--muted)}
         <td class="num">{% if w.hard_filter_details.peg and w.hard_filter_details.peg.value is not none %}{{ "%.1f"|format(w.hard_filter_details.peg.value) }}{% else %}-{% endif %}</td>
         <td class="num">{% if w.hard_filter_details.debt_to_equity and w.hard_filter_details.debt_to_equity.value is not none %}{{ "%.2f"|format(w.hard_filter_details.debt_to_equity.value) }}{% else %}-{% endif %}</td>
         <td class="num">{{ w.rs_rating or '-' }}</td>
-        <td class="num">${{ "%.2f"|format(w.price) if w.price else '-' }}</td>
+        <td class="num">{{ currency_symbol }}{{ "%.2f"|format(w.price) if w.price else '-' }}</td>
         <td class="{{ 'pass' if w.vcp and w.vcp.is_vcp else 'fail' }}">{{ 'YES' if w.vcp and w.vcp.is_vcp else 'NO' }}</td>
         <td class="num">{{ "%.2f"|format(w.vcp.volatility_ratio) if w.vcp else '-' }}</td>
       </tr>
@@ -630,12 +634,29 @@ footer a{color:var(--muted)}
 """
 
 
-def save_screener_output(result: dict, output_dir: str) -> None:
+_MARKET_META = {
+    "us": {
+        "title": "QGM Screener",
+        "universe_label": "S&P 500 + NASDAQ 100",
+        "currency_symbol": "$",
+        "price_format": "%.2f",
+    },
+    "tw": {
+        "title": "QGM 台股篩選",
+        "universe_label": "台股上市（前 ~150 檔）",
+        "currency_symbol": "NT$",
+        "price_format": "%.2f",
+    },
+}
+
+
+def save_screener_output(result: dict, output_dir: str, market: str = "us") -> None:
     """Save screener results as JSON snapshot and HTML report."""
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
     _TPE = timezone(timedelta(hours=8))
     today = datetime.now(_TPE).strftime("%Y-%m-%d")
+    meta = _MARKET_META.get(market, _MARKET_META["us"])
 
     # JSON snapshot
     json_path = out / f"snapshot_{today}.json"
@@ -674,6 +695,10 @@ def save_screener_output(result: dict, output_dir: str) -> None:
         candidates=result["candidates"],
         watch_list=result["watch_list"],
         quality_pool=result["quality_pool"],
+        market=market,
+        market_title=meta["title"],
+        universe_label=meta["universe_label"],
+        currency_symbol=meta["currency_symbol"],
     )
     html_path.write_text(html)
     logger.info("Saved HTML report to %s", html_path)
@@ -688,11 +713,17 @@ def save_screener_output(result: dict, output_dir: str) -> None:
 
 
 if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--market", choices=["us", "tw"], default="us")
+    args = parser.parse_args()
+
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     )
-    result = run_daily_screener()
+    output_dir = f"live/output/{args.market}"
+    result = run_daily_screener(output_dir=output_dir, market=args.market)
     n_cand = len(result["candidates"])
     n_watch = len(result["watch_list"])
     n_pool = len(result["quality_pool"])
