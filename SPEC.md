@@ -283,8 +283,8 @@ def gm_trend_score(annual_gm_series: pd.Series) -> tuple[int, dict]:
 
 | # | 條件 | 閾值 | 意義 |
 |---|---|---|---|
-| 1 | FCF Margin 當前 | **> 0%** | 不燒錢 |
-| 2 | ROIC 當前 | **> 5%** 或改善中 | 寬鬆門檻 |
+| 1 | FCF Margin 當前 | **> -5%** | 允許接近轉正的高投資期公司 |
+| 2 | ROIC 當前 | **> 0%** | 至少有正回報 |
 | 3 | EPS CAGR 未來 2 年 | **> 30%** 或 turnaround 路徑 | 加速度必須更強（決策 18） |
 | 4 | PEG | **< 2** | 同 MLB |
 | 5 | D/E 或 Net Debt/EBITDA | **D/E < 0.7 OR ND/EBITDA < 3.0** | 同 MLB（決策 19） |
@@ -509,8 +509,8 @@ quality_filter:
     peg_max: 2.0
     debt_to_equity_max: 0.7
   triple_a:
-    fcf_margin_min: 0.0
-    roic_min: 0.05
+    fcf_margin_min: -0.05
+    roic_min: 0.0
     eps_cagr_2y_fwd_min: 0.30
     peg_max: 2.0
     debt_to_equity_max: 0.7

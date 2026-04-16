@@ -529,8 +529,8 @@ footer a{color:var(--muted)}
       潛力加速股 — 高成長但不確定性較高，技術門檻更嚴格，部位更小、停損更緊：
       <ul>
         <li><strong>EPS CAGR 前瞻 2 年</strong> &ge; 30% — 分析師預估盈餘高速成長</li>
-        <li><strong>FCF Margin</strong> &ge; 0% — 較寬鬆底線（允許高投資期）</li>
-        <li><strong>ROIC</strong> &ge; 5% — 較寬鬆底線</li>
+        <li><strong>FCF Margin</strong> &ge; -5% — 允許接近轉正的高投資期公司</li>
+        <li><strong>ROIC</strong> &gt; 0% — 至少有正回報</li>
         <li><strong>PEG</strong> &le; 2.0, <strong>D/E</strong> &le; 0.7 — 同 MLB</li>
       </ul>
       <strong>Quality 分數</strong>（滿分 80）用於排名，僅衡量品質穩定度：FCF 穩定度 (15) + ROIC 穩定度 (15) + 毛利率趨勢 (10) + 資本密度 (10) + 現金覆蓋負債 (10) + 護城河代理分 (20)。EPS CAGR 為入選硬篩門檻，通過後不重複計分。

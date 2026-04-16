@@ -7,8 +7,8 @@ quality_filter:
     debt_to_equity_max: 0.7
     net_debt_to_ebitda_max: 3.0
   triple_a:
-    fcf_margin_min: 0.0
-    roic_min: 0.05
+    fcf_margin_min: -0.05
+    roic_min: 0.0
     eps_cagr_2y_fwd_min: 0.30
     peg_max: 2.0
     debt_to_equity_max: 0.7
