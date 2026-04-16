@@ -285,8 +285,8 @@ def gm_trend_score(annual_gm_series: pd.Series) -> tuple[int, dict]:
 |---|---|---|---|
 | 1 | FCF Margin 當前 | **> -5%** | 允許接近轉正的高投資期公司 |
 | 2 | ROIC 當前 | **> 0%** | 至少有正回報 |
-| 3 | EPS CAGR 未來 2 年 | **> 30%** 或 turnaround 路徑 | 加速度必須更強（決策 18） |
-| 4 | PEG | **< 2** | 同 MLB |
+| 3 | EPS CAGR 未來 2 年 | **> 25%** 或 turnaround 路徑 | 加速度必須更強（決策 18） |
+| 4 | PEG | **< 2.5** | 允許貴一點但合理的成長股 |
 | 5 | D/E 或 Net Debt/EBITDA | **D/E < 0.7 OR ND/EBITDA < 3.0** | 同 MLB（決策 19） |
 
 **3A Turnaround 路徑**（決策 18）：當基期 EPS ≤ 0 導致前瞻 CAGR 無法計算時，改用以下條件替代條件 3：
@@ -511,8 +511,8 @@ quality_filter:
   triple_a:
     fcf_margin_min: -0.05
     roic_min: 0.0
-    eps_cagr_2y_fwd_min: 0.30
-    peg_max: 2.0
+    eps_cagr_2y_fwd_min: 0.25
+    peg_max: 2.5
     debt_to_equity_max: 0.7
 
 technical_filter:
