@@ -218,19 +218,61 @@ def gross_margin_current(income_stmt: pd.DataFrame) -> float | None:
 # 6. PEG Ratio
 # ---------------------------------------------------------------------------
 
-def peg_ratio(info: dict, growth_rate: float | None = None) -> float | None:
-    """PEG ratio from info snapshot.
-
-    Prefers trailingPegRatio. Falls back to forwardPE / (growth_rate × 100)
-    when growth_rate is provided (e.g., eps_cagr_2y_fwd).
-
-    Args:
-        info: yfinance info dict.
-        growth_rate: Forward EPS growth rate as decimal (e.g., 0.15 for 15%)
-            used to compute fallback PEG when trailingPegRatio is None.
+def get_fy1_fy2_eps(estimates: "pd.DataFrame | None") -> tuple[float | None, float | None]:
+    """Extract FY1 and FY2 consensus EPS from yfinance estimates.
 
     Returns:
-        PEG ratio as float, or None if unavailable.
+        (fy1_eps, fy2_eps) — either can be None if data missing.
+    """
+    if estimates is None or estimates.empty:
+        return None, None
+    fy1 = None
+    fy2 = None
+    if "0y" in estimates.index:
+        v = estimates.loc["0y", "avg"]
+        if not pd.isna(v):
+            fy1 = float(v)
+    if "+1y" in estimates.index:
+        v = estimates.loc["+1y", "avg"]
+        if not pd.isna(v):
+            fy2 = float(v)
+    return fy1, fy2
+
+
+def peg_ratio_fy2(
+    price: float | None,
+    fy2_eps: float | None,
+    growth_rate: float | None,
+) -> float | None:
+    """PEG computed from FY2 forward P/E.
+
+    PEG = (price / fy2_eps) / (growth_rate × 100)
+
+    Args:
+        price: Current stock price.
+        fy2_eps: Next fiscal year consensus EPS estimate.
+        growth_rate: Forward EPS growth rate as decimal (e.g., 0.15 for 15%).
+
+    Returns:
+        PEG ratio as float, or None if any input is missing/invalid.
+    """
+    if (
+        price is None
+        or fy2_eps is None
+        or growth_rate is None
+        or price <= 0
+        or fy2_eps <= 0
+        or growth_rate <= 0
+    ):
+        return None
+    fy2_pe = price / fy2_eps
+    return fy2_pe / (growth_rate * 100)
+
+
+def peg_ratio(info: dict, growth_rate: float | None = None) -> float | None:
+    """Legacy PEG ratio from info snapshot (kept for backward compat).
+
+    Prefers trailingPegRatio. Falls back to forwardPE / (growth_rate × 100).
     """
     peg = info.get("trailingPegRatio")
     if peg is not None and not (isinstance(peg, float) and np.isnan(peg)):

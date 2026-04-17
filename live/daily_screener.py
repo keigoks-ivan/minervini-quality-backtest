@@ -138,6 +138,11 @@ def run_daily_screener(
             price = td["info"].get("currentPrice") or td["info"].get("regularMarketPrice")
         cap = td["info"].get("marketCap", 0) if td["info"] else 0
 
+        # FY1/FY2 EPS and P/E
+        fy1_eps, fy2_eps = metrics.get_fy1_fy2_eps(td.get("estimates"))
+        fy1_per = round(price / fy1_eps, 1) if price and fy1_eps and fy1_eps > 0 else None
+        fy2_per = round(price / fy2_eps, 1) if price and fy2_eps and fy2_eps > 0 else None
+
         all_results[ticker] = {
             "ticker": ticker,
             "pool": pool,
@@ -150,6 +155,10 @@ def run_daily_screener(
             "vcp": vcp_result,
             "price": price,
             "market_cap_b": round(cap / 1e9, 1) if cap else None,
+            "fy1_eps": round(fy1_eps, 2) if fy1_eps is not None else None,
+            "fy2_eps": round(fy2_eps, 2) if fy2_eps is not None else None,
+            "fy1_per": fy1_per,
+            "fy2_per": fy2_per,
         }
 
     # 3. RS Ratings (percentile ranking across all scored tickers)
@@ -417,7 +426,7 @@ footer a{color:var(--muted)}
     <div class="table-wrap">
     <table>
       <thead><tr>
-        <th>Ticker</th><th>Pool</th><th>Quality</th><th class="num">EPS Fwd</th><th class="num">ROIC</th><th class="num">FCF%</th><th class="num">PEG</th><th class="num">D/E</th><th class="num">RS</th><th class="num">Price</th>
+        <th>Ticker</th><th>Pool</th><th>Quality</th><th class="num">EPS Fwd</th><th class="num">ROIC</th><th class="num">FCF%</th><th class="num">PEG</th><th class="num">FY1 EPS</th><th class="num">FY2 EPS</th><th class="num">FY1 PER</th><th class="num">FY2 PER</th><th class="num">D/E</th><th class="num">RS</th><th class="num">Price</th>
         <th class="num">Pivot</th><th class="num">Vol Ratio</th><th class="num">Drawdown</th>
       </tr></thead>
       <tbody>
@@ -430,6 +439,10 @@ footer a{color:var(--muted)}
         <td class="num">{% if c.hard_filter_details.roic and c.hard_filter_details.roic.value is not none %}{{ "%.0f"|format(c.hard_filter_details.roic.value * 100) }}%{% else %}-{% endif %}</td>
         <td class="num">{% if c.hard_filter_details.fcf_margin and c.hard_filter_details.fcf_margin.value is not none %}{{ "%.0f"|format(c.hard_filter_details.fcf_margin.value * 100) }}%{% else %}-{% endif %}</td>
         <td class="num">{% if c.hard_filter_details.peg and c.hard_filter_details.peg.value is not none %}{{ "%.1f"|format(c.hard_filter_details.peg.value) }}{% else %}-{% endif %}</td>
+        <td class="num">{{ "%.2f"|format(c.fy1_eps) if c.fy1_eps is not none else '-' }}</td>
+        <td class="num">{{ "%.2f"|format(c.fy2_eps) if c.fy2_eps is not none else '-' }}</td>
+        <td class="num">{{ "%.1f"|format(c.fy1_per) if c.fy1_per is not none else '-' }}</td>
+        <td class="num">{{ "%.1f"|format(c.fy2_per) if c.fy2_per is not none else '-' }}</td>
         <td class="num">{% if c.hard_filter_details.debt_to_equity and c.hard_filter_details.debt_to_equity.value is not none %}{{ "%.2f"|format(c.hard_filter_details.debt_to_equity.value) }}{% else %}-{% endif %}</td>
         <td class="num">{{ c.rs_rating or '-' }}</td>
         <td class="num">{{ currency_symbol }}{{ "%.2f"|format(c.price) if c.price else '-' }}</td>
@@ -461,7 +474,7 @@ footer a{color:var(--muted)}
     <div class="table-wrap">
     <table>
       <thead><tr>
-        <th>Ticker</th><th>Pool</th><th>Quality</th><th class="num">EPS Fwd</th><th class="num">ROIC</th><th class="num">FCF%</th><th class="num">PEG</th><th class="num">D/E</th><th class="num">RS</th><th class="num">Price</th>
+        <th>Ticker</th><th>Pool</th><th>Quality</th><th class="num">EPS Fwd</th><th class="num">ROIC</th><th class="num">FCF%</th><th class="num">PEG</th><th class="num">FY1 EPS</th><th class="num">FY2 EPS</th><th class="num">FY1 PER</th><th class="num">FY2 PER</th><th class="num">D/E</th><th class="num">RS</th><th class="num">Price</th>
         <th>VCP</th><th class="num">Vol Ratio</th>
       </tr></thead>
       <tbody>
@@ -474,6 +487,10 @@ footer a{color:var(--muted)}
         <td class="num">{% if w.hard_filter_details.roic and w.hard_filter_details.roic.value is not none %}{{ "%.0f"|format(w.hard_filter_details.roic.value * 100) }}%{% else %}-{% endif %}</td>
         <td class="num">{% if w.hard_filter_details.fcf_margin and w.hard_filter_details.fcf_margin.value is not none %}{{ "%.0f"|format(w.hard_filter_details.fcf_margin.value * 100) }}%{% else %}-{% endif %}</td>
         <td class="num">{% if w.hard_filter_details.peg and w.hard_filter_details.peg.value is not none %}{{ "%.1f"|format(w.hard_filter_details.peg.value) }}{% else %}-{% endif %}</td>
+        <td class="num">{{ "%.2f"|format(w.fy1_eps) if w.fy1_eps is not none else '-' }}</td>
+        <td class="num">{{ "%.2f"|format(w.fy2_eps) if w.fy2_eps is not none else '-' }}</td>
+        <td class="num">{{ "%.1f"|format(w.fy1_per) if w.fy1_per is not none else '-' }}</td>
+        <td class="num">{{ "%.1f"|format(w.fy2_per) if w.fy2_per is not none else '-' }}</td>
         <td class="num">{% if w.hard_filter_details.debt_to_equity and w.hard_filter_details.debt_to_equity.value is not none %}{{ "%.2f"|format(w.hard_filter_details.debt_to_equity.value) }}{% else %}-{% endif %}</td>
         <td class="num">{{ w.rs_rating or '-' }}</td>
         <td class="num">{{ currency_symbol }}{{ "%.2f"|format(w.price) if w.price else '-' }}</td>
@@ -505,7 +522,7 @@ footer a{color:var(--muted)}
     <div class="table-wrap">
     <table>
       <thead><tr>
-        <th>Ticker</th><th>Quality</th><th class="num">EPS Fwd</th><th class="num">ROIC</th><th class="num">FCF%</th><th class="num">PEG</th><th class="num">D/E</th><th class="num">RS</th><th>Trend</th><th>VCP</th>
+        <th>Ticker</th><th>Quality</th><th class="num">EPS Fwd</th><th class="num">ROIC</th><th class="num">FCF%</th><th class="num">PEG</th><th class="num">FY1 EPS</th><th class="num">FY2 EPS</th><th class="num">FY1 PER</th><th class="num">FY2 PER</th><th class="num">D/E</th><th class="num">RS</th><th>Trend</th><th>VCP</th>
       </tr></thead>
       <tbody>
       {% for q in quality_pool if q.pool == 'MLB' %}
@@ -516,6 +533,10 @@ footer a{color:var(--muted)}
         <td class="num">{% if q.hard_filter_details.roic and q.hard_filter_details.roic.value is not none %}{{ "%.0f"|format(q.hard_filter_details.roic.value * 100) }}%{% else %}-{% endif %}</td>
         <td class="num">{% if q.hard_filter_details.fcf_margin and q.hard_filter_details.fcf_margin.value is not none %}{{ "%.0f"|format(q.hard_filter_details.fcf_margin.value * 100) }}%{% else %}-{% endif %}</td>
         <td class="num">{% if q.hard_filter_details.peg and q.hard_filter_details.peg.value is not none %}{{ "%.1f"|format(q.hard_filter_details.peg.value) }}{% else %}-{% endif %}</td>
+        <td class="num">{{ "%.2f"|format(q.fy1_eps) if q.fy1_eps is not none else '-' }}</td>
+        <td class="num">{{ "%.2f"|format(q.fy2_eps) if q.fy2_eps is not none else '-' }}</td>
+        <td class="num">{{ "%.1f"|format(q.fy1_per) if q.fy1_per is not none else '-' }}</td>
+        <td class="num">{{ "%.1f"|format(q.fy2_per) if q.fy2_per is not none else '-' }}</td>
         <td class="num">{% if q.hard_filter_details.debt_to_equity and q.hard_filter_details.debt_to_equity.value is not none %}{{ "%.2f"|format(q.hard_filter_details.debt_to_equity.value) }}{% else %}-{% endif %}</td>
         <td class="num">{{ q.rs_rating or '-' }}</td>
         <td class="{{ 'pass' if q.trend_template and q.trend_template.all_pass else 'fail' }}">{{ 'PASS' if q.trend_template and q.trend_template.all_pass else 'FAIL' }}</td>
@@ -544,7 +565,7 @@ footer a{color:var(--muted)}
     <div class="table-wrap">
     <table>
       <thead><tr>
-        <th>Ticker</th><th>Quality</th><th class="num">EPS Fwd</th><th class="num">ROIC</th><th class="num">FCF%</th><th class="num">PEG</th><th class="num">D/E</th><th class="num">RS</th><th>Trend</th><th>VCP</th>
+        <th>Ticker</th><th>Quality</th><th class="num">EPS Fwd</th><th class="num">ROIC</th><th class="num">FCF%</th><th class="num">PEG</th><th class="num">FY1 EPS</th><th class="num">FY2 EPS</th><th class="num">FY1 PER</th><th class="num">FY2 PER</th><th class="num">D/E</th><th class="num">RS</th><th>Trend</th><th>VCP</th>
       </tr></thead>
       <tbody>
       {% for q in quality_pool if q.pool == '3A' %}
@@ -555,6 +576,10 @@ footer a{color:var(--muted)}
         <td class="num">{% if q.hard_filter_details.roic and q.hard_filter_details.roic.value is not none %}{{ "%.0f"|format(q.hard_filter_details.roic.value * 100) }}%{% else %}-{% endif %}</td>
         <td class="num">{% if q.hard_filter_details.fcf_margin and q.hard_filter_details.fcf_margin.value is not none %}{{ "%.0f"|format(q.hard_filter_details.fcf_margin.value * 100) }}%{% else %}-{% endif %}</td>
         <td class="num">{% if q.hard_filter_details.peg and q.hard_filter_details.peg.value is not none %}{{ "%.1f"|format(q.hard_filter_details.peg.value) }}{% else %}-{% endif %}</td>
+        <td class="num">{{ "%.2f"|format(q.fy1_eps) if q.fy1_eps is not none else '-' }}</td>
+        <td class="num">{{ "%.2f"|format(q.fy2_eps) if q.fy2_eps is not none else '-' }}</td>
+        <td class="num">{{ "%.1f"|format(q.fy1_per) if q.fy1_per is not none else '-' }}</td>
+        <td class="num">{{ "%.1f"|format(q.fy2_per) if q.fy2_per is not none else '-' }}</td>
         <td class="num">{% if q.hard_filter_details.debt_to_equity and q.hard_filter_details.debt_to_equity.value is not none %}{{ "%.2f"|format(q.hard_filter_details.debt_to_equity.value) }}{% else %}-{% endif %}</td>
         <td class="num">{{ q.rs_rating or '-' }}</td>
         <td class="{{ 'pass' if q.trend_template and q.trend_template.all_pass else 'fail' }}">{{ 'PASS' if q.trend_template and q.trend_template.all_pass else 'FAIL' }}</td>

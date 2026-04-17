@@ -253,11 +253,11 @@ class TestUpgradeLogic:
         assert qualifies, f"Should upgrade with 3Q: {details}"
 
     def test_upgrade_also_requires_current_mlb_hard_filter(self, params: dict) -> None:
-        # 3Q TTM pass but PEG > 2 → no upgrade
+        # 3Q TTM pass but PEG > 2 via overpriced stock → no upgrade
         td = _make_mock_ticker_data(
             q_fcf_margins=[0.12, 0.11, 0.11, 0.08, 0.07],
             q_roics=[0.18, 0.16, 0.16, 0.10, 0.09],
-            peg=2.5,  # Fails PEG < 2
+            info_overrides={"currentPrice": 400, "regularMarketPrice": 400},
         )
         qualifies, details = check_upgrade_3a_to_mlb(td, params)
         assert not qualifies

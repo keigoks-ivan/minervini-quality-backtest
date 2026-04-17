@@ -82,10 +82,12 @@ def _run_hard_filter(
         "gt",
     )
 
-    # 4. PEG — fall back to forwardPE / (eps_cagr × 100) when trailingPegRatio is None
+    # 4. PEG — computed from FY2 forward P/E
+    price = info.get("currentPrice") or info.get("regularMarketPrice")
+    _fy1_eps, _fy2_eps = metrics.get_fy1_fy2_eps(estimates)
     details["peg"] = _check(
         "peg",
-        metrics.peg_ratio(info, growth_rate=eps_cagr_fwd),
+        metrics.peg_ratio_fy2(price, _fy2_eps, eps_cagr_fwd),
         params["peg_max"],
         "lt",
     )
