@@ -138,10 +138,13 @@ def run_daily_screener(
             price = td["info"].get("currentPrice") or td["info"].get("regularMarketPrice")
         cap = td["info"].get("marketCap", 0) if td["info"] else 0
 
-        # FY1/FY2 EPS and P/E
+        # FY1/FY2 EPS and P/E + calendar year labels
         fy1_eps, fy2_eps = metrics.get_fy1_fy2_eps(td.get("estimates"))
         fy1_per = round(price / fy1_eps, 1) if price and fy1_eps and fy1_eps > 0 else None
         fy2_per = round(price / fy2_eps, 1) if price and fy2_eps and fy2_eps > 0 else None
+        nfy_ts = td["info"].get("nextFiscalYearEnd") if td["info"] else None
+        fy1_year = datetime.fromtimestamp(nfy_ts).year if nfy_ts else None
+        fy2_year = fy1_year + 1 if fy1_year else None
 
         all_results[ticker] = {
             "ticker": ticker,
@@ -159,6 +162,8 @@ def run_daily_screener(
             "fy2_eps": round(fy2_eps, 2) if fy2_eps is not None else None,
             "fy1_per": fy1_per,
             "fy2_per": fy2_per,
+            "fy1_year": fy1_year,
+            "fy2_year": fy2_year,
         }
 
     # 3. RS Ratings (percentile ranking across all scored tickers)
@@ -230,10 +235,18 @@ def run_daily_screener(
     watch_list.sort(key=lambda x: x["quality_score"], reverse=True)
     quality_pool.sort(key=lambda x: x["quality_score"], reverse=True)
 
+    # Derive majority calendar year labels for column headers
+    from collections import Counter
+    fy1_years = [r["fy1_year"] for r in quality_pool if r.get("fy1_year")]
+    fy1_label = str(Counter(fy1_years).most_common(1)[0][0]) if fy1_years else "FY1"
+    fy2_label = str(int(fy1_label) + 1) if fy1_label.isdigit() else "FY2"
+
     result = {
         "run_timestamp": datetime.now(timezone(timedelta(hours=8))).isoformat(),
         "universe_size": len(tickers),
         "summary": summary,
+        "fy1_label": fy1_label,
+        "fy2_label": fy2_label,
         "candidates": candidates,
         "watch_list": watch_list,
         "quality_pool": quality_pool,
@@ -426,7 +439,7 @@ footer a{color:var(--muted)}
     <div class="table-wrap">
     <table>
       <thead><tr>
-        <th>Ticker</th><th>Pool</th><th>Quality</th><th class="num">EPS Fwd</th><th class="num">ROIC</th><th class="num">FCF%</th><th class="num">PEG</th><th class="num">FY1 EPS</th><th class="num">FY2 EPS</th><th class="num">FY1 PER</th><th class="num">FY2 PER</th><th class="num">D/E</th><th class="num">RS</th><th class="num">Price</th>
+        <th>Ticker</th><th>Pool</th><th>Quality</th><th class="num">EPS Fwd</th><th class="num">ROIC</th><th class="num">FCF%</th><th class="num">PEG</th><th class="num">{{ fy1_label }}E EPS</th><th class="num">{{ fy2_label }}E EPS</th><th class="num">{{ fy1_label }}E PER</th><th class="num">{{ fy2_label }}E PER</th><th class="num">D/E</th><th class="num">RS</th><th class="num">Price</th>
         <th class="num">Pivot</th><th class="num">Vol Ratio</th><th class="num">Drawdown</th>
       </tr></thead>
       <tbody>
@@ -474,7 +487,7 @@ footer a{color:var(--muted)}
     <div class="table-wrap">
     <table>
       <thead><tr>
-        <th>Ticker</th><th>Pool</th><th>Quality</th><th class="num">EPS Fwd</th><th class="num">ROIC</th><th class="num">FCF%</th><th class="num">PEG</th><th class="num">FY1 EPS</th><th class="num">FY2 EPS</th><th class="num">FY1 PER</th><th class="num">FY2 PER</th><th class="num">D/E</th><th class="num">RS</th><th class="num">Price</th>
+        <th>Ticker</th><th>Pool</th><th>Quality</th><th class="num">EPS Fwd</th><th class="num">ROIC</th><th class="num">FCF%</th><th class="num">PEG</th><th class="num">{{ fy1_label }}E EPS</th><th class="num">{{ fy2_label }}E EPS</th><th class="num">{{ fy1_label }}E PER</th><th class="num">{{ fy2_label }}E PER</th><th class="num">D/E</th><th class="num">RS</th><th class="num">Price</th>
         <th>VCP</th><th class="num">Vol Ratio</th>
       </tr></thead>
       <tbody>
@@ -522,7 +535,7 @@ footer a{color:var(--muted)}
     <div class="table-wrap">
     <table>
       <thead><tr>
-        <th>Ticker</th><th>Quality</th><th class="num">EPS Fwd</th><th class="num">ROIC</th><th class="num">FCF%</th><th class="num">PEG</th><th class="num">FY1 EPS</th><th class="num">FY2 EPS</th><th class="num">FY1 PER</th><th class="num">FY2 PER</th><th class="num">D/E</th><th class="num">RS</th><th>Trend</th><th>VCP</th>
+        <th>Ticker</th><th>Quality</th><th class="num">EPS Fwd</th><th class="num">ROIC</th><th class="num">FCF%</th><th class="num">PEG</th><th class="num">{{ fy1_label }}E EPS</th><th class="num">{{ fy2_label }}E EPS</th><th class="num">{{ fy1_label }}E PER</th><th class="num">{{ fy2_label }}E PER</th><th class="num">D/E</th><th class="num">RS</th><th>Trend</th><th>VCP</th>
       </tr></thead>
       <tbody>
       {% for q in quality_pool if q.pool == 'MLB' %}
@@ -565,7 +578,7 @@ footer a{color:var(--muted)}
     <div class="table-wrap">
     <table>
       <thead><tr>
-        <th>Ticker</th><th>Quality</th><th class="num">EPS Fwd</th><th class="num">ROIC</th><th class="num">FCF%</th><th class="num">PEG</th><th class="num">FY1 EPS</th><th class="num">FY2 EPS</th><th class="num">FY1 PER</th><th class="num">FY2 PER</th><th class="num">D/E</th><th class="num">RS</th><th>Trend</th><th>VCP</th>
+        <th>Ticker</th><th>Quality</th><th class="num">EPS Fwd</th><th class="num">ROIC</th><th class="num">FCF%</th><th class="num">PEG</th><th class="num">{{ fy1_label }}E EPS</th><th class="num">{{ fy2_label }}E EPS</th><th class="num">{{ fy1_label }}E PER</th><th class="num">{{ fy2_label }}E PER</th><th class="num">D/E</th><th class="num">RS</th><th>Trend</th><th>VCP</th>
       </tr></thead>
       <tbody>
       {% for q in quality_pool if q.pool == '3A' %}
@@ -720,6 +733,8 @@ def save_screener_output(result: dict, output_dir: str, market: str = "us") -> N
         candidates=result["candidates"],
         watch_list=result["watch_list"],
         quality_pool=result["quality_pool"],
+        fy1_label=result.get("fy1_label", "FY1"),
+        fy2_label=result.get("fy2_label", "FY2"),
         market=market,
         market_title=meta["title"],
         universe_label=meta["universe_label"],
