@@ -438,7 +438,7 @@ footer a{color:var(--muted)}
         <td class="num">{% if c.hard_filter_details.eps_cagr_2y_fwd and c.hard_filter_details.eps_cagr_2y_fwd.value is not none %}{{ "%.0f"|format(c.hard_filter_details.eps_cagr_2y_fwd.value * 100) }}%{% else %}-{% endif %}</td>
         <td class="num">{% if c.hard_filter_details.roic and c.hard_filter_details.roic.value is not none %}{{ "%.0f"|format(c.hard_filter_details.roic.value * 100) }}%{% else %}-{% endif %}</td>
         <td class="num">{% if c.hard_filter_details.fcf_margin and c.hard_filter_details.fcf_margin.value is not none %}{{ "%.0f"|format(c.hard_filter_details.fcf_margin.value * 100) }}%{% else %}-{% endif %}</td>
-        <td class="num">{% if c.hard_filter_details.peg and c.hard_filter_details.peg.value is not none %}{{ "%.1f"|format(c.hard_filter_details.peg.value) }}{% else %}-{% endif %}</td>
+        <td class="num">{% if c.hard_filter_details.peg and c.hard_filter_details.peg.value is not none %}{{ "%.2f"|format(c.hard_filter_details.peg.value) }}{% else %}-{% endif %}</td>
         <td class="num">{{ "%.2f"|format(c.fy1_eps) if c.fy1_eps is not none else '-' }}</td>
         <td class="num">{{ "%.2f"|format(c.fy2_eps) if c.fy2_eps is not none else '-' }}</td>
         <td class="num">{{ "%.1f"|format(c.fy1_per) if c.fy1_per is not none else '-' }}</td>
@@ -486,7 +486,7 @@ footer a{color:var(--muted)}
         <td class="num">{% if w.hard_filter_details.eps_cagr_2y_fwd and w.hard_filter_details.eps_cagr_2y_fwd.value is not none %}{{ "%.0f"|format(w.hard_filter_details.eps_cagr_2y_fwd.value * 100) }}%{% else %}-{% endif %}</td>
         <td class="num">{% if w.hard_filter_details.roic and w.hard_filter_details.roic.value is not none %}{{ "%.0f"|format(w.hard_filter_details.roic.value * 100) }}%{% else %}-{% endif %}</td>
         <td class="num">{% if w.hard_filter_details.fcf_margin and w.hard_filter_details.fcf_margin.value is not none %}{{ "%.0f"|format(w.hard_filter_details.fcf_margin.value * 100) }}%{% else %}-{% endif %}</td>
-        <td class="num">{% if w.hard_filter_details.peg and w.hard_filter_details.peg.value is not none %}{{ "%.1f"|format(w.hard_filter_details.peg.value) }}{% else %}-{% endif %}</td>
+        <td class="num">{% if w.hard_filter_details.peg and w.hard_filter_details.peg.value is not none %}{{ "%.2f"|format(w.hard_filter_details.peg.value) }}{% else %}-{% endif %}</td>
         <td class="num">{{ "%.2f"|format(w.fy1_eps) if w.fy1_eps is not none else '-' }}</td>
         <td class="num">{{ "%.2f"|format(w.fy2_eps) if w.fy2_eps is not none else '-' }}</td>
         <td class="num">{{ "%.1f"|format(w.fy1_per) if w.fy1_per is not none else '-' }}</td>
@@ -532,7 +532,7 @@ footer a{color:var(--muted)}
         <td class="num">{% if q.hard_filter_details.eps_cagr_2y_fwd and q.hard_filter_details.eps_cagr_2y_fwd.value is not none %}{{ "%.0f"|format(q.hard_filter_details.eps_cagr_2y_fwd.value * 100) }}%{% else %}-{% endif %}</td>
         <td class="num">{% if q.hard_filter_details.roic and q.hard_filter_details.roic.value is not none %}{{ "%.0f"|format(q.hard_filter_details.roic.value * 100) }}%{% else %}-{% endif %}</td>
         <td class="num">{% if q.hard_filter_details.fcf_margin and q.hard_filter_details.fcf_margin.value is not none %}{{ "%.0f"|format(q.hard_filter_details.fcf_margin.value * 100) }}%{% else %}-{% endif %}</td>
-        <td class="num">{% if q.hard_filter_details.peg and q.hard_filter_details.peg.value is not none %}{{ "%.1f"|format(q.hard_filter_details.peg.value) }}{% else %}-{% endif %}</td>
+        <td class="num">{% if q.hard_filter_details.peg and q.hard_filter_details.peg.value is not none %}{{ "%.2f"|format(q.hard_filter_details.peg.value) }}{% else %}-{% endif %}</td>
         <td class="num">{{ "%.2f"|format(q.fy1_eps) if q.fy1_eps is not none else '-' }}</td>
         <td class="num">{{ "%.2f"|format(q.fy2_eps) if q.fy2_eps is not none else '-' }}</td>
         <td class="num">{{ "%.1f"|format(q.fy1_per) if q.fy1_per is not none else '-' }}</td>
@@ -575,7 +575,7 @@ footer a{color:var(--muted)}
         <td class="num">{% if q.hard_filter_details.eps_cagr_2y_fwd and q.hard_filter_details.eps_cagr_2y_fwd.value is not none %}{{ "%.0f"|format(q.hard_filter_details.eps_cagr_2y_fwd.value * 100) }}%{% else %}-{% endif %}</td>
         <td class="num">{% if q.hard_filter_details.roic and q.hard_filter_details.roic.value is not none %}{{ "%.0f"|format(q.hard_filter_details.roic.value * 100) }}%{% else %}-{% endif %}</td>
         <td class="num">{% if q.hard_filter_details.fcf_margin and q.hard_filter_details.fcf_margin.value is not none %}{{ "%.0f"|format(q.hard_filter_details.fcf_margin.value * 100) }}%{% else %}-{% endif %}</td>
-        <td class="num">{% if q.hard_filter_details.peg and q.hard_filter_details.peg.value is not none %}{{ "%.1f"|format(q.hard_filter_details.peg.value) }}{% else %}-{% endif %}</td>
+        <td class="num">{% if q.hard_filter_details.peg and q.hard_filter_details.peg.value is not none %}{{ "%.2f"|format(q.hard_filter_details.peg.value) }}{% else %}-{% endif %}</td>
         <td class="num">{{ "%.2f"|format(q.fy1_eps) if q.fy1_eps is not none else '-' }}</td>
         <td class="num">{{ "%.2f"|format(q.fy2_eps) if q.fy2_eps is not none else '-' }}</td>
         <td class="num">{{ "%.1f"|format(q.fy1_per) if q.fy1_per is not none else '-' }}</td>
