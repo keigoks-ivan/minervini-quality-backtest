@@ -395,7 +395,7 @@ footer a{color:var(--muted)}
   <div class="stats">
     <div class="stat-card">
       <div class="stat-label">掃描日期</div>
-      <div class="stat-value" style="font-size:1.15rem">{{ run_timestamp[:16].replace('T',' ') }}</div>
+      <div class="stat-value" style="font-size:1.15rem">{{ run_timestamp[:16].replace('T',' ') }} (TPE)</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Universe</div>
