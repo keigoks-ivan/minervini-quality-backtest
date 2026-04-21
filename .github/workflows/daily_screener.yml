@@ -43,8 +43,11 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run daily screener
-        run: python -m live.daily_screener
+      - name: Run daily screener (US)
+        run: python -m live.daily_screener --market us
+
+      - name: Run daily screener (TW)
+        run: python -m live.daily_screener --market tw
 
       - name: Checkout financial-analysis-bot
         uses: actions/checkout@v6
@@ -69,51 +72,60 @@ jobs:
 
       - name: Copy output to deploy repo
         run: |
-          mkdir -p _deploy/docs/qgm/archive
           TODAY=$(TZ='Asia/Taipei' date +%Y-%m-%d)
 
-          # Main files
-          cp live/output/latest.html _deploy/docs/qgm/latest.html
-          cp live/output/latest.json _deploy/docs/qgm/latest.json
+          # Deploy both markets: us → /qgm/, tw → /qgm-tw/
+          for MARKET in us tw; do
+            if [ "$MARKET" = "us" ]; then DEST_DIR="qgm"; else DEST_DIR="qgm-tw"; fi
+            SRC="live/output/$MARKET"
+            DEST="_deploy/docs/$DEST_DIR"
+            mkdir -p "$DEST/archive"
 
-          # Archive with date (preserves all history)
-          if [ -f live/output/candidates_${TODAY}.html ]; then
-            cp live/output/candidates_${TODAY}.html _deploy/docs/qgm/archive/
-            echo "Archived: candidates_${TODAY}.html"
-          else
-            echo "::error::Expected file live/output/candidates_${TODAY}.html not found. daily_screener output is broken."
-            exit 1
-          fi
+            # Main files
+            cp "$SRC/latest.html" "$DEST/latest.html"
+            cp "$SRC/latest.json" "$DEST/latest.json"
 
-          if [ -f live/output/snapshot_${TODAY}.json ]; then
-            cp live/output/snapshot_${TODAY}.json _deploy/docs/qgm/archive/
-            echo "Archived: snapshot_${TODAY}.json"
-          else
-            echo "::error::Expected file live/output/snapshot_${TODAY}.json not found."
-            exit 1
-          fi
+            # Archive with date (preserves all history)
+            if [ -f "$SRC/candidates_${TODAY}.html" ]; then
+              cp "$SRC/candidates_${TODAY}.html" "$DEST/archive/"
+              echo "[$MARKET] Archived: candidates_${TODAY}.html"
+            else
+              echo "::error::Expected file $SRC/candidates_${TODAY}.html not found. daily_screener output is broken."
+              exit 1
+            fi
 
-          # index.html — redirect to latest
-          printf '<!DOCTYPE html>\n<html>\n<head><meta http-equiv="refresh" content="0;url=latest.html"><title>QGM</title></head>\n<body><p>Redirecting to <a href="latest.html">latest report</a>...</p></body>\n</html>\n' > _deploy/docs/qgm/index.html
+            if [ -f "$SRC/snapshot_${TODAY}.json" ]; then
+              cp "$SRC/snapshot_${TODAY}.json" "$DEST/archive/"
+              echo "[$MARKET] Archived: snapshot_${TODAY}.json"
+            else
+              echo "::error::Expected file $SRC/snapshot_${TODAY}.json not found."
+              exit 1
+            fi
 
-          # archive/index.html — browsable list of all historical reports
-          cd _deploy/docs/qgm/archive
-          echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>QGM Archive</title>' > index.html
-          echo '<style>body{font-family:-apple-system,sans-serif;max-width:800px;margin:40px auto;padding:0 20px}' >> index.html
-          echo 'a{display:block;padding:6px 0;color:#1a5f3f;text-decoration:none}a:hover{text-decoration:underline}</style>' >> index.html
-          echo '</head><body><h1>QGM Screener Archive</h1><p><a href="../latest.html">&larr; Latest Report</a></p>' >> index.html
-          for f in $(ls -r candidates_*.html 2>/dev/null); do
-            DATE=$(echo "$f" | sed 's/candidates_//;s/\.html//')
-            echo "<a href=\"$f\">$DATE</a>" >> index.html
+            # index.html — redirect to latest
+            printf '<!DOCTYPE html>\n<html>\n<head><meta http-equiv="refresh" content="0;url=latest.html"><title>QGM</title></head>\n<body><p>Redirecting to <a href="latest.html">latest report</a>...</p></body>\n</html>\n' > "$DEST/index.html"
+
+            # archive/index.html — browsable list of all historical reports
+            (
+              cd "$DEST/archive"
+              echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>QGM Archive</title>' > index.html
+              echo '<style>body{font-family:-apple-system,sans-serif;max-width:800px;margin:40px auto;padding:0 20px}' >> index.html
+              echo 'a{display:block;padding:6px 0;color:#1a5f3f;text-decoration:none}a:hover{text-decoration:underline}</style>' >> index.html
+              echo '</head><body><h1>QGM Screener Archive</h1><p><a href="../latest.html">&larr; Latest Report</a></p>' >> index.html
+              for f in $(ls -r candidates_*.html 2>/dev/null); do
+                DATE=$(echo "$f" | sed 's/candidates_//;s/\.html//')
+                echo "<a href=\"$f\">$DATE</a>" >> index.html
+              done
+              echo '</body></html>' >> index.html
+            )
           done
-          echo '</body></html>' >> index.html
 
       - name: Push to financial-analysis-bot
         working-directory: _deploy
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/qgm/
+          git add docs/qgm/ docs/qgm-tw/
           if git diff --cached --quiet; then
             echo "No changes to push"
           else
