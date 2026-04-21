@@ -113,12 +113,12 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # Pull latest first — US workflow may have pushed concurrently
-          git pull --rebase
           git add docs/qgm-tw/
           if git diff --cached --quiet; then
             echo "No changes to push"
           else
             git commit -m "QGM TW screener update $(date -u +%Y-%m-%d)"
+            # Rebase onto remote in case US workflow pushed concurrently
+            git pull --rebase
             git push
           fi
