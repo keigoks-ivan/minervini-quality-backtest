@@ -1,0 +1,124 @@
+name: Daily QGM Screener (US)
+
+on:
+  schedule:
+    # 23:00 UTC = 07:00 TPE (next day) — after US close
+    - cron: '0 23 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: daily-screener-us
+  cancel-in-progress: false
+
+jobs:
+  screener:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            pip-
+
+      - name: Cache yfinance data
+        uses: actions/cache@v5
+        with:
+          path: data/cache/
+          key: yf-cache-us-${{ hashFiles('data/universe/*.parquet') }}
+          restore-keys: |
+            yf-cache-us-
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run daily screener (US)
+        run: python -m live.daily_screener --market us
+
+      - name: Checkout financial-analysis-bot
+        uses: actions/checkout@v6
+        with:
+          repository: keigoks-ivan/financial-analysis-bot
+          token: ${{ secrets.RESEARCH_REPO_TOKEN }}
+          path: _deploy
+
+      - name: Safety check — verify CNAME unchanged
+        run: |
+          EXPECTED="research.investmquest.com"
+          if [ ! -f _deploy/docs/CNAME ]; then
+            echo "::error::CNAME file missing"
+            exit 1
+          fi
+          ACTUAL=$(tr -d '\n\r' < _deploy/docs/CNAME)
+          if [ "$ACTUAL" != "$EXPECTED" ]; then
+            echo "::error::CNAME mismatch! Expected '$EXPECTED', got '$ACTUAL'. Aborting."
+            exit 1
+          fi
+          echo "CNAME check passed: $ACTUAL"
+
+      - name: Copy output to deploy repo
+        run: |
+          TODAY=$(TZ='Asia/Taipei' date +%Y-%m-%d)
+          SRC="live/output/us"
+          DEST="_deploy/docs/qgm"
+          mkdir -p "$DEST/archive"
+
+          cp "$SRC/latest.html" "$DEST/latest.html"
+          cp "$SRC/latest.json" "$DEST/latest.json"
+
+          if [ -f "$SRC/candidates_${TODAY}.html" ]; then
+            cp "$SRC/candidates_${TODAY}.html" "$DEST/archive/"
+            echo "Archived: candidates_${TODAY}.html"
+          else
+            echo "::error::Expected file $SRC/candidates_${TODAY}.html not found. daily_screener output is broken."
+            exit 1
+          fi
+
+          if [ -f "$SRC/snapshot_${TODAY}.json" ]; then
+            cp "$SRC/snapshot_${TODAY}.json" "$DEST/archive/"
+            echo "Archived: snapshot_${TODAY}.json"
+          else
+            echo "::error::Expected file $SRC/snapshot_${TODAY}.json not found."
+            exit 1
+          fi
+
+          printf '<!DOCTYPE html>\n<html>\n<head><meta http-equiv="refresh" content="0;url=latest.html"><title>QGM</title></head>\n<body><p>Redirecting to <a href="latest.html">latest report</a>...</p></body>\n</html>\n' > "$DEST/index.html"
+
+          (
+            cd "$DEST/archive"
+            echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>QGM Archive</title>' > index.html
+            echo '<style>body{font-family:-apple-system,sans-serif;max-width:800px;margin:40px auto;padding:0 20px}' >> index.html
+            echo 'a{display:block;padding:6px 0;color:#1a5f3f;text-decoration:none}a:hover{text-decoration:underline}</style>' >> index.html
+            echo '</head><body><h1>QGM Screener Archive</h1><p><a href="../latest.html">&larr; Latest Report</a></p>' >> index.html
+            for f in $(ls -r candidates_*.html 2>/dev/null); do
+              DATE=$(echo "$f" | sed 's/candidates_//;s/\.html//')
+              echo "<a href=\"$f\">$DATE</a>" >> index.html
+            done
+            echo '</body></html>' >> index.html
+          )
+
+      - name: Push to financial-analysis-bot
+        working-directory: _deploy
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Pull latest first — TW workflow may have pushed concurrently
+          git pull --rebase
+          git add docs/qgm/
+          if git diff --cached --quiet; then
+            echo "No changes to push"
+          else
+            git commit -m "QGM US screener update $(date -u +%Y-%m-%d)"
+            git push
+          fi
