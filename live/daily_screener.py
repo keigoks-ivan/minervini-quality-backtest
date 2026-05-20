@@ -271,6 +271,7 @@ _HTML_TEMPLATE = """\
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
+  <meta name="robots" content="noindex,nofollow">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>{{ market_title }} &middot; {{ date }} — InvestMQuest Research</title>
