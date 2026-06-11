@@ -93,20 +93,25 @@ jobs:
             exit 1
           fi
 
-          printf '<!DOCTYPE html>\n<html>\n<head><meta http-equiv="refresh" content="0;url=latest.html"><title>QGM</title></head>\n<body><p>Redirecting to <a href="latest.html">latest report</a>...</p></body>\n</html>\n' > "$DEST/index.html"
+          printf '<!DOCTYPE html>\n<html>\n<head><meta http-equiv="refresh" content="0;url=latest.html"><title>QGM</title></head>\n<body>\n<p>Redirecting to <a href="latest.html">latest report</a>...</p></body>\n</html>\n' > "$DEST/index.html"
 
           (
             cd "$DEST/archive"
             echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>QGM Archive</title>' > index.html
             echo '<style>body{font-family:-apple-system,sans-serif;max-width:800px;margin:40px auto;padding:0 20px}' >> index.html
             echo 'a{display:block;padding:6px 0;color:#1a5f3f;text-decoration:none}a:hover{text-decoration:underline}</style>' >> index.html
-            echo '</head><body><h1>QGM Screener Archive</h1><p><a href="../latest.html">&larr; Latest Report</a></p>' >> index.html
+            echo '</head><body>' >> index.html
+            echo '<h1>QGM Screener Archive</h1><p><a href="../latest.html">&larr; Latest Report</a></p>' >> index.html
             for f in $(ls -r candidates_*.html 2>/dev/null); do
               DATE=$(echo "$f" | sed 's/candidates_//;s/\.html//')
               echo "<a href=\"$f\">$DATE</a>" >> index.html
             done
             echo '</body></html>' >> index.html
           )
+
+          # Canonical site header (synced copy in live/site_nav_block.py)
+          python -m live.inject_nav "$DEST/index.html" us
+          python -m live.inject_nav "$DEST/archive/index.html" us
 
       - name: Push to financial-analysis-bot
         working-directory: _deploy
