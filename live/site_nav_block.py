@@ -77,6 +77,7 @@ NAV_BLOCKS = {
         <div class="imq-dd-menu">
           <a href="/backtest/">量化回測</a>
           <a href="/dd-screener/">DD Screener</a>
+          <a href="/engine/">⚙ 決策引擎</a>
           <a href="/qgm/" class="active">QGM 美股</a>
           <a href="/qgm-tw/">QGM 台股</a>
           <a href="/screener.html">Screener 美股</a>
@@ -156,6 +157,7 @@ NAV_BLOCKS = {
         <div class="imq-dd-menu">
           <a href="/backtest/">量化回測</a>
           <a href="/dd-screener/">DD Screener</a>
+          <a href="/engine/">⚙ 決策引擎</a>
           <a href="/qgm/">QGM 美股</a>
           <a href="/qgm-tw/" class="active">QGM 台股</a>
           <a href="/screener.html">Screener 美股</a>
