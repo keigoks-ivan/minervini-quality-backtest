@@ -9,6 +9,7 @@ synced from financial-analysis-bot/scripts/site_nav.py — do not edit by hand
 
 Synced 2026-07-07（整站 IA v2：三群 研究/市場/工具 → 四群 選股/研究/市場/系統；
 QGM 自「工具 quant」移入「選股 pick」，group key 一律 'pick'）。
+2026-07-09 補：市場群加入「總經深度報告」(/macro/)，us/tw 兩塊皆已同步。
 
 Pages must insert NAV_BLOCKS[market] immediately after <body>, separated by a
 single newline — mirroring site_nav.py's idempotent injector, so re-running
@@ -88,6 +89,7 @@ NAV_BLOCKS = {
           <a href="/crowding/">擁擠交易監測</a>
           <a href="/rotation/">產業輪動</a>
           <a href="/regime/">大類資產 regime</a>
+          <a href="/macro/">總經深度報告</a>
           <a href="/weekly/">週報</a>
         </div>
       </div>
@@ -179,6 +181,7 @@ NAV_BLOCKS = {
           <a href="/crowding/">擁擠交易監測</a>
           <a href="/rotation/">產業輪動</a>
           <a href="/regime/">大類資產 regime</a>
+          <a href="/macro/">總經深度報告</a>
           <a href="/weekly/">週報</a>
         </div>
       </div>
