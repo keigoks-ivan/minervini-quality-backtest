@@ -10,6 +10,8 @@ synced from financial-analysis-bot/scripts/site_nav.py — do not edit by hand
 Synced 2026-07-07（整站 IA v2：三群 研究/市場/工具 → 四群 選股/研究/市場/系統；
 QGM 自「工具 quant」移入「選股 pick」，group key 一律 'pick'）。
 2026-07-09 補：市場群加入「總經深度報告」(/macro/)，us/tw 兩塊皆已同步。
+2026-07-10 補：選股主控台整併——精選清單／Pipeline 漏斗／決策引擎三條收斂進
+/cockpit/ 單一入口（標籤改「選股主控台」），下拉自 9 條瘦身為 6 條，us/tw 兩塊皆已同步。
 
 Pages must insert NAV_BLOCKS[market] immediately after <body>, separated by a
 single newline — mirroring site_nav.py's idempotent injector, so re-running
@@ -57,11 +59,8 @@ NAV_BLOCKS = {
       <div class="imq-dd active">
         <button type="button" class="imq-dd-btn">選股<span class="imq-caret">▾</span></button>
         <div class="imq-dd-menu">
-          <a href="/cockpit/">選股駕駛艙</a>
-          <a href="/picks/">精選清單</a>
-          <a href="/dd-screener/pipeline.html">Pipeline 漏斗</a>
+          <a href="/cockpit/">選股主控台</a>
           <a href="/dd-screener/">DD Screener</a>
-          <a href="/engine/">決策引擎</a>
           <a href="/research/momentum-5/">Momentum-5</a>
           <a href="/qgm/" class="active">QGM 美股</a>
           <a href="/qgm-tw/">QGM 台股</a>
@@ -150,11 +149,8 @@ NAV_BLOCKS = {
       <div class="imq-dd active">
         <button type="button" class="imq-dd-btn">選股<span class="imq-caret">▾</span></button>
         <div class="imq-dd-menu">
-          <a href="/cockpit/">選股駕駛艙</a>
-          <a href="/picks/">精選清單</a>
-          <a href="/dd-screener/pipeline.html">Pipeline 漏斗</a>
+          <a href="/cockpit/">選股主控台</a>
           <a href="/dd-screener/">DD Screener</a>
-          <a href="/engine/">決策引擎</a>
           <a href="/research/momentum-5/">Momentum-5</a>
           <a href="/qgm/">QGM 美股</a>
           <a href="/qgm-tw/" class="active">QGM 台股</a>
