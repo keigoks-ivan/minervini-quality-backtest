@@ -19,7 +19,12 @@ logger = logging.getLogger(__name__)
 UNIVERSE_DIR = Path("data/universe")
 
 _SP500_URL = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
-_NDX_URL = "https://en.wikipedia.org/wiki/Nasdaq-100"
+# Components table moved out of the Nasdaq-100 article on 2026-07-09;
+# keep the old article as fallback in case the move is reverted.
+_NDX_URLS = [
+    "https://en.wikipedia.org/wiki/List_of_NASDAQ-100_companies",
+    "https://en.wikipedia.org/wiki/Nasdaq-100",
+]
 _TWSE_LIST_URL = "https://openapi.twse.com.tw/v1/opendata/t187ap03_L"
 
 
@@ -62,13 +67,18 @@ def fetch_ndx_tickers() -> list[str]:
     Returns:
         Sorted list of tickers in yfinance format.
     """
-    html = _fetch_html(_NDX_URL)
-    tables = pd.read_html(io.StringIO(html))
-    # The components table has a 'Ticker' column; find it
-    for t in tables:
-        if "Ticker" in t.columns:
-            tickers = t["Ticker"].apply(_fix_ticker).tolist()
-            return sorted(set(tickers))
+    for url in _NDX_URLS:
+        try:
+            html = _fetch_html(url)
+            tables = pd.read_html(io.StringIO(html))
+        except Exception as exc:
+            logger.warning("Failed to fetch NDX components from %s: %s", url, exc)
+            continue
+        # The components table has a 'Ticker' column and ~100 rows; find it
+        for t in tables:
+            if "Ticker" in t.columns and len(t) >= 80:
+                tickers = t["Ticker"].apply(_fix_ticker).tolist()
+                return sorted(set(tickers))
     raise ValueError("Could not find NASDAQ-100 components table on Wikipedia")
 
 
