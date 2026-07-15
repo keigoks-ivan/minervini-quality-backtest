@@ -16,6 +16,7 @@ QGM 自「工具 quant」移入「選股 pick」，group key 一律 'pick'）。
 「使用說明」改「使用指南」；新增頂層「搜尋」(/search.html)；研究群首增「個股總覽」(/t/)；
 市場群增「資產輪動雷達」(/rotation/radar.html)；系統群增「裁決實績」(/track-record/)與「公開資料」(/data.html)；
 us/tw 兩塊皆已由 canonical full_nav_block 重生為 byte-identical。
+2026-07-16 補：市場群 monitor 之後加入「偵測警報網」(/detective/)，us/tw 兩塊皆已同步。
 
 Pages must insert NAV_BLOCKS[market] immediately after <body>, separated by a
 single newline — mirroring site_nav.py's idempotent injector, so re-running
@@ -64,6 +65,7 @@ NAV_BLOCKS = {
         <button type="button" class="imq-dd-btn">市場<span class="imq-caret">▾</span></button>
         <div class="imq-dd-menu">
           <a href="/monitor/">市場監測</a>
+          <a href="/detective/">偵測警報網</a>
           <a href="/rotation/radar.html">資產輪動雷達</a>
           <a href="/rotation/">產業輪動</a>
           <a href="/crowding/">擁擠交易監測</a>
@@ -158,6 +160,7 @@ NAV_BLOCKS = {
         <button type="button" class="imq-dd-btn">市場<span class="imq-caret">▾</span></button>
         <div class="imq-dd-menu">
           <a href="/monitor/">市場監測</a>
+          <a href="/detective/">偵測警報網</a>
           <a href="/rotation/radar.html">資產輪動雷達</a>
           <a href="/rotation/">產業輪動</a>
           <a href="/crowding/">擁擠交易監測</a>
