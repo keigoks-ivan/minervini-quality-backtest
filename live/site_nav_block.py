@@ -21,6 +21,10 @@ us/tw 兩塊皆已由 canonical full_nav_block 重生為 byte-identical。
 Pages must insert NAV_BLOCKS[market] immediately after <body>, separated by a
 single newline — mirroring site_nav.py's idempotent injector, so re-running
 that injector over docs/ leaves these pages byte-identical.
+2026-08-20 補（intel 2.0 Phase C）：canonical 大改後全量重生——市場群 13→7（monitor／
+偵測警報網／產業輪動／擁擠交易／regime／催化劑 六條目收斂進 /intel/ 情報監視器分頁殼，
+intel 升首位；每日簡報 08-17 掛回；補齊 07-17 以來累積的頂層「投資流程」等變更）。
+us/tw 兩塊皆由 canonical full_nav_block 重生、byte-identical 驗證通過。
 """
 
 # market -> canonical header block ('us' -> /qgm/ active, 'tw' -> /qgm-tw/ active)
@@ -64,15 +68,11 @@ NAV_BLOCKS = {
       <div class="imq-dd">
         <button type="button" class="imq-dd-btn">市場<span class="imq-caret">▾</span></button>
         <div class="imq-dd-menu">
-          <a href="/monitor/">市場監測</a>
-          <a href="/detective/">偵測警報網</a>
+          <a href="/intel/">情報監視器</a>
+          <a href="/briefing/">每日簡報</a>
           <a href="/rotation/radar.html">資產輪動雷達</a>
-          <a href="/rotation/">產業輪動</a>
-          <a href="/crowding/">擁擠交易監測</a>
-          <a href="/regime/">大類資產 regime</a>
           <a href="/macro/">總經深度報告</a>
           <a href="/earnings/">財報分析</a>
-          <a href="/catalyst/">催化劑日曆</a>
           <a href="/markets.html">Markets</a>
           <a href="/sectors.html">Sectors</a>
         </div>
@@ -105,15 +105,15 @@ NAV_BLOCKS = {
         <button type="button" class="imq-dd-btn">系統<span class="imq-caret">▾</span></button>
         <div class="imq-dd-menu">
           <a href="/track-record/">裁決實績</a>
-          <a href="/long-track-smh/">長線訊號 SMH</a>
-          <a href="/long-track-tw/">台股長線</a>
-          <a href="/turtle-sleeve/">商品 Sleeve</a>
+          <a href="/pm/">持倉週掃</a>
+          <a href="/long-track-w52-adaptive/">實單主系統</a>
+          <a href="/long-track/">追蹤總覽</a>
           <a href="/backtest/">量化回測</a>
           <a href="/tools/">期貨部位計算機</a>
-          <a href="/cache/">Data Cache</a>
           <a href="/data.html">公開資料</a>
         </div>
       </div>
+      <a href="/flow/">投資流程</a>
       <a href="/how-to.html">使用指南</a>
       <a href="/search.html">搜尋</a>
     </nav>
@@ -159,15 +159,11 @@ NAV_BLOCKS = {
       <div class="imq-dd">
         <button type="button" class="imq-dd-btn">市場<span class="imq-caret">▾</span></button>
         <div class="imq-dd-menu">
-          <a href="/monitor/">市場監測</a>
-          <a href="/detective/">偵測警報網</a>
+          <a href="/intel/">情報監視器</a>
+          <a href="/briefing/">每日簡報</a>
           <a href="/rotation/radar.html">資產輪動雷達</a>
-          <a href="/rotation/">產業輪動</a>
-          <a href="/crowding/">擁擠交易監測</a>
-          <a href="/regime/">大類資產 regime</a>
           <a href="/macro/">總經深度報告</a>
           <a href="/earnings/">財報分析</a>
-          <a href="/catalyst/">催化劑日曆</a>
           <a href="/markets.html">Markets</a>
           <a href="/sectors.html">Sectors</a>
         </div>
@@ -200,15 +196,15 @@ NAV_BLOCKS = {
         <button type="button" class="imq-dd-btn">系統<span class="imq-caret">▾</span></button>
         <div class="imq-dd-menu">
           <a href="/track-record/">裁決實績</a>
-          <a href="/long-track-smh/">長線訊號 SMH</a>
-          <a href="/long-track-tw/">台股長線</a>
-          <a href="/turtle-sleeve/">商品 Sleeve</a>
+          <a href="/pm/">持倉週掃</a>
+          <a href="/long-track-w52-adaptive/">實單主系統</a>
+          <a href="/long-track/">追蹤總覽</a>
           <a href="/backtest/">量化回測</a>
           <a href="/tools/">期貨部位計算機</a>
-          <a href="/cache/">Data Cache</a>
           <a href="/data.html">公開資料</a>
         </div>
       </div>
+      <a href="/flow/">投資流程</a>
       <a href="/how-to.html">使用指南</a>
       <a href="/search.html">搜尋</a>
     </nav>
