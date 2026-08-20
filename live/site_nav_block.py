@@ -25,6 +25,10 @@ that injector over docs/ leaves these pages byte-identical.
 偵測警報網／產業輪動／擁擠交易／regime／催化劑 六條目收斂進 /intel/ 情報監視器分頁殼，
 intel 升首位；每日簡報 08-17 掛回；補齊 07-17 以來累積的頂層「投資流程」等變更）。
 us/tw 兩塊皆由 canonical full_nav_block 重生、byte-identical 驗證通過。
+2026-08-20 補（研究區整併第二階段，nav 瘦身）：研究 ▾ 由 7 項收斂為 3 項——「個股研究」
+(/t/)／「產業研究」(/id/)／「Tier Matrix」(/id/tier_matrix.html)。移除的 4 項（個股 DD／
+供應鏈地圖／多股對比／期望落差綜合研判）已於研究區整併第一階段（20260820）收進 /t/ 或
+/id/ 分頁。us/tw 兩塊研究下拉皆已同步；其餘群不受影響，只手動替換研究下拉區塊字元。
 """
 
 # market -> canonical header block ('us' -> /qgm/ active, 'tw' -> /qgm-tw/ active)
@@ -91,13 +95,9 @@ NAV_BLOCKS = {
       <div class="imq-dd">
         <button type="button" class="imq-dd-btn">研究<span class="imq-caret">▾</span></button>
         <div class="imq-dd-menu">
-          <a href="/t/">個股總覽</a>
-          <a href="/research/">個股 DD</a>
-          <a href="/id/">產業深度 ID</a>
+          <a href="/t/">個股研究</a>
+          <a href="/id/">產業研究</a>
           <a href="/id/tier_matrix.html">Tier Matrix</a>
-          <a href="/supply-chain/">供應鏈地圖</a>
-          <a href="/comparisons/">多股對比</a>
-          <a href="/research/synthesis/">期望落差綜合研判</a>
         </div>
       </div>
       <a href="/mental-models/">心智模型</a>
@@ -182,13 +182,9 @@ NAV_BLOCKS = {
       <div class="imq-dd">
         <button type="button" class="imq-dd-btn">研究<span class="imq-caret">▾</span></button>
         <div class="imq-dd-menu">
-          <a href="/t/">個股總覽</a>
-          <a href="/research/">個股 DD</a>
-          <a href="/id/">產業深度 ID</a>
+          <a href="/t/">個股研究</a>
+          <a href="/id/">產業研究</a>
           <a href="/id/tier_matrix.html">Tier Matrix</a>
-          <a href="/supply-chain/">供應鏈地圖</a>
-          <a href="/comparisons/">多股對比</a>
-          <a href="/research/synthesis/">期望落差綜合研判</a>
         </div>
       </div>
       <a href="/mental-models/">心智模型</a>
