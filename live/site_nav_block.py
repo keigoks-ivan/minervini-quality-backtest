@@ -34,6 +34,10 @@ us/tw 兩塊皆由 canonical full_nav_block 重生、byte-identical 驗證通過
 ("det", /detective/，排首位)。us/tw 兩塊已由 canonical full_nav_block('pick', 'qus'/'qtw')
 重生為 byte-identical（見 financial-analysis-bot notes/site-internal/root/
 _consolidation_system_20260823.md）。
+2026-08-23 補（系統群 nav 瘦身 phase 2）：MENU["system"] 8→4 項，只留系統主控台
+(/long-track/，原「追蹤總覽」改名)／量化回測／期貨部位計算機／公開資料；市場偵探／
+裁決實績／持倉週掃／實單主系統四個下拉項移除（頁面仍可直達，只是不進系統群選單）。
+us/tw 兩塊已由 canonical full_nav_block('pick','qus'/'qtw') 重生為 byte-identical。
 """
 
 # market -> canonical header block ('us' -> /qgm/ active, 'tw' -> /qgm-tw/ active)
@@ -99,11 +103,7 @@ NAV_BLOCKS = {
       <div class="imq-dd">
         <button type="button" class="imq-dd-btn">系統<span class="imq-caret">▾</span></button>
         <div class="imq-dd-menu">
-          <a href="/detective/">市場偵探</a>
-          <a href="/track-record/">裁決實績</a>
-          <a href="/pm/">持倉週掃</a>
-          <a href="/long-track-w52-adaptive/">實單主系統</a>
-          <a href="/long-track/">追蹤總覽</a>
+          <a href="/long-track/">系統主控台</a>
           <a href="/backtest/">量化回測</a>
           <a href="/tools/">期貨部位計算機</a>
           <a href="/data.html">公開資料</a>
@@ -177,11 +177,7 @@ NAV_BLOCKS = {
       <div class="imq-dd">
         <button type="button" class="imq-dd-btn">系統<span class="imq-caret">▾</span></button>
         <div class="imq-dd-menu">
-          <a href="/detective/">市場偵探</a>
-          <a href="/track-record/">裁決實績</a>
-          <a href="/pm/">持倉週掃</a>
-          <a href="/long-track-w52-adaptive/">實單主系統</a>
-          <a href="/long-track/">追蹤總覽</a>
+          <a href="/long-track/">系統主控台</a>
           <a href="/backtest/">量化回測</a>
           <a href="/tools/">期貨部位計算機</a>
           <a href="/data.html">公開資料</a>
