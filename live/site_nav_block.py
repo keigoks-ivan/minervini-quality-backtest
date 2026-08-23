@@ -29,6 +29,11 @@ us/tw 兩塊皆由 canonical full_nav_block 重生、byte-identical 驗證通過
 (/t/)／「產業研究」(/id/)／「Tier Matrix」(/id/tier_matrix.html)。移除的 4 項（個股 DD／
 供應鏈地圖／多股對比／期望落差綜合研判）已於研究區整併第一階段（20260820）收進 /t/ 或
 /id/ 分頁。us/tw 兩塊研究下拉皆已同步；其餘群不受影響，只手動替換研究下拉區塊字元。
+2026-08-23 補（系統群 nav 整併 phase 0 catch-up）：補齊「選股入口整頓第二批」落後——
+選股群收斂為單一「選股主控台」，改渲染成頂層直連（不再是下拉）；系統群加回「市場偵探」
+("det", /detective/，排首位)。us/tw 兩塊已由 canonical full_nav_block('pick', 'qus'/'qtw')
+重生為 byte-identical（見 financial-analysis-bot notes/site-internal/root/
+_consolidation_system_20260823.md）。
 """
 
 # market -> canonical header block ('us' -> /qgm/ active, 'tw' -> /qgm-tw/ active)
@@ -81,17 +86,7 @@ NAV_BLOCKS = {
           <a href="/sectors.html">Sectors</a>
         </div>
       </div>
-      <div class="imq-dd active">
-        <button type="button" class="imq-dd-btn">選股<span class="imq-caret">▾</span></button>
-        <div class="imq-dd-menu">
-          <a href="/cockpit/">選股主控台</a>
-          <a href="/dd-screener/">DD Screener</a>
-          <a href="/research/momentum-5/">Momentum-5</a>
-          <a href="/qgm/" class="active">QGM 美股</a>
-          <a href="/qgm-tw/">QGM 台股</a>
-          <a href="/screeners.html">RS+VCP Screener</a>
-        </div>
-      </div>
+      <a href="/cockpit/" class="active">選股</a>
       <div class="imq-dd">
         <button type="button" class="imq-dd-btn">研究<span class="imq-caret">▾</span></button>
         <div class="imq-dd-menu">
@@ -104,6 +99,7 @@ NAV_BLOCKS = {
       <div class="imq-dd">
         <button type="button" class="imq-dd-btn">系統<span class="imq-caret">▾</span></button>
         <div class="imq-dd-menu">
+          <a href="/detective/">市場偵探</a>
           <a href="/track-record/">裁決實績</a>
           <a href="/pm/">持倉週掃</a>
           <a href="/long-track-w52-adaptive/">實單主系統</a>
@@ -168,17 +164,7 @@ NAV_BLOCKS = {
           <a href="/sectors.html">Sectors</a>
         </div>
       </div>
-      <div class="imq-dd active">
-        <button type="button" class="imq-dd-btn">選股<span class="imq-caret">▾</span></button>
-        <div class="imq-dd-menu">
-          <a href="/cockpit/">選股主控台</a>
-          <a href="/dd-screener/">DD Screener</a>
-          <a href="/research/momentum-5/">Momentum-5</a>
-          <a href="/qgm/">QGM 美股</a>
-          <a href="/qgm-tw/" class="active">QGM 台股</a>
-          <a href="/screeners.html">RS+VCP Screener</a>
-        </div>
-      </div>
+      <a href="/cockpit/" class="active">選股</a>
       <div class="imq-dd">
         <button type="button" class="imq-dd-btn">研究<span class="imq-caret">▾</span></button>
         <div class="imq-dd-menu">
@@ -191,6 +177,7 @@ NAV_BLOCKS = {
       <div class="imq-dd">
         <button type="button" class="imq-dd-btn">系統<span class="imq-caret">▾</span></button>
         <div class="imq-dd-menu">
+          <a href="/detective/">市場偵探</a>
           <a href="/track-record/">裁決實績</a>
           <a href="/pm/">持倉週掃</a>
           <a href="/long-track-w52-adaptive/">實單主系統</a>
