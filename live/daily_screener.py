@@ -684,7 +684,10 @@ def save_screener_output(result: dict, output_dir: str, market: str = "us") -> N
         if isinstance(obj, (np.integer,)):
             return int(obj)
         if isinstance(obj, (np.floating,)):
-            return float(obj)
+            f = float(obj)
+            # NaN/inf are not valid JSON (json.dumps emits bare NaN, which
+            # browsers' JSON.parse rejects) — map to null
+            return f if np.isfinite(f) else None
         if isinstance(obj, (np.bool_,)):
             return bool(obj)
         if isinstance(obj, np.ndarray):
@@ -693,6 +696,8 @@ def save_screener_output(result: dict, output_dir: str, market: str = "us") -> N
             return {k: _clean(v) for k, v in obj.items()}
         if isinstance(obj, list):
             return [_clean(i) for i in obj]
+        if isinstance(obj, float):
+            return obj if np.isfinite(obj) else None
         return obj
 
     clean_result = _clean(result)
