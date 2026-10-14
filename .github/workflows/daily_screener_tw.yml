@@ -2,8 +2,9 @@ name: Daily QGM Screener (TW)
 
 on:
   schedule:
-    # 06:00 UTC = 14:00 TPE — after TW close (13:30)
-    - cron: '0 6 * * 1-5'
+    # 每週一次：週五 06:00 UTC = 14:00 TPE，台股週五收盤後
+    # （耐久值來自年報，不需每日重算；2026-10-14 由每日改週頻省 Actions 分鐘）
+    - cron: '0 6 * * 5'
   workflow_dispatch:
 
 concurrency:
