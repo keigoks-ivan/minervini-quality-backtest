@@ -53,6 +53,8 @@ full_nav_block('pick','qus'/'qtw') 重生為 byte-identical。
 canonical 同日同步。us/tw 兩塊皆已由 canonical full_nav_block 重生為 byte-identical。
 2026-10-08 補：市場 ▾ 下拉緊接「總經深度報告」之後新增「總經資料庫」(/macro/db/)——
 canonical 同日同步，已重新驗證對 canonical byte-identical。
+2026-10-16 補：市場 ▾ 下拉緊接「總經資料庫」之後新增「AI 信用監測」(/ai-credit/)——
+canonical 同日同步。
 """
 
 # market -> canonical header block ('us' -> /qgm/ active, 'tw' -> /qgm-tw/ active)
@@ -102,6 +104,7 @@ NAV_BLOCKS = {
           <a href="/rotation/radar.html">資產輪動雷達</a>
           <a href="/macro/">總經深度報告</a>
           <a href="/macro/db/">總經資料庫</a>
+          <a href="/ai-credit/">AI 信用監測</a>
           <a href="/earnings/">財報分析</a>
           <a href="/markets.html">Markets</a>
           <a href="/sectors.html">Sectors</a>
@@ -184,6 +187,7 @@ NAV_BLOCKS = {
           <a href="/rotation/radar.html">資產輪動雷達</a>
           <a href="/macro/">總經深度報告</a>
           <a href="/macro/db/">總經資料庫</a>
+          <a href="/ai-credit/">AI 信用監測</a>
           <a href="/earnings/">財報分析</a>
           <a href="/markets.html">Markets</a>
           <a href="/sectors.html">Sectors</a>
