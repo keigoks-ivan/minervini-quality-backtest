@@ -94,6 +94,10 @@ jobs:
             exit 1
           fi
 
+          # 封存只留最近 30 個日期（2026-10-19：網站逼近 GitHub Pages 1 GB 上限；
+          # 更早的檔由 v7-backtest/data/qgm_archive/ 保存，不在網站）。要在重生 archive/index.html 之前跑。
+          python -m live.prune_archive "$DEST/archive" --keep 30
+
           printf '<!DOCTYPE html>\n<html>\n<head><meta http-equiv="refresh" content="0;url=latest.html"><title>QGM TW</title></head>\n<body>\n<p>Redirecting to <a href="latest.html">latest report</a>...</p></body>\n</html>\n' > "$DEST/index.html"
 
           (
