@@ -9,22 +9,24 @@
 from __future__ import annotations
 
 NOTE_TEXT = "本頁不再列在選單；資料仍每週更新，供選股席位的候選母體使用。"
+NOTE_TEXT_TW = "本頁不再列在選單；資料仍每週更新，供 DD Screener 台股池的品質與市值資料使用。"
 START = "<!--qgm-note-->"
 END = "<!--/qgm-note-->"
 ANCHOR = '<main class="container"'
 
 
-def note_html() -> str:
+def note_html(market: str = "us") -> str:
+    text = NOTE_TEXT_TW if market == "tw" else NOTE_TEXT
     return (
         f'{START}<div class="container" style="padding-top:1rem">'
         f'<div style="background:#f4f4f5;border:1px solid #d4d4d8;border-left:4px solid #71717a;border-radius:8px;'
-        f'color:#3f3f46;padding:.7rem 1rem;font-size:.88rem;line-height:1.7">{NOTE_TEXT}</div></div>{END}\n'
+        f'color:#3f3f46;padding:.7rem 1rem;font-size:.88rem;line-height:1.7">{text}</div></div>{END}\n'
     )
 
 
-def apply_note(html: str) -> str:
+def apply_note(html: str, market: str = "us") -> str:
     """把說明放進 HTML（已有則整塊換掉）。找不到插入點時丟 ValueError，不靜默略過。"""
-    note = note_html()
+    note = note_html(market)
     if START in html and END in html:
         a = html.index(START)
         b = html.index(END) + len(END)

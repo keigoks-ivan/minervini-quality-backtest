@@ -730,7 +730,7 @@ def save_screener_output(result: dict, output_dir: str, market: str = "us") -> N
         "__IMQ_NAV__", NAV_BLOCKS.get(market, NAV_BLOCKS["us"]), 1
     )
     # 頁頂一句說明（2026-10-19：頁面不再列在選單，資料照常產生；見 live/archive_note.py）
-    html = apply_note(html)
+    html = apply_note(html, market)
     html_path.write_text(html)
     logger.info("Saved HTML report to %s", html_path)
 
