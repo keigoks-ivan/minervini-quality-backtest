@@ -55,6 +55,7 @@ canonical 同日同步。us/tw 兩塊皆已由 canonical full_nav_block 重生�
 canonical 同日同步，已重新驗證對 canonical byte-identical。
 2026-10-16 補：市場 ▾ 下拉緊接「總經資料庫」之後新增「AI 信用監測」(/ai-credit/)——
 canonical 同日同步。
+2026-10-19 補（catch-up）：市場 ▾ 補「台股籌碼」「韓股籌碼」，選股 ▾ 補「CAN SLIM 選股」；研究 ▾ 拿掉「Tier Matrix」，頂層拿掉「使用指南」。QGM 已不在選單，us／tw 兩塊由 canonical full_nav_block('pick','qus'/'qtw') 重生為 byte-identical，只剩群高亮。
 """
 
 # market -> canonical header block ('us' -> /qgm/ active, 'tw' -> /qgm-tw/ active)
@@ -105,6 +106,8 @@ NAV_BLOCKS = {
           <a href="/macro/">總經深度報告</a>
           <a href="/macro/db/">總經資料庫</a>
           <a href="/ai-credit/">AI 信用監測</a>
+          <a href="/tw-chips/">台股籌碼</a>
+          <a href="/kr-chips/">韓股籌碼</a>
           <a href="/earnings/">財報分析</a>
           <a href="/markets.html">Markets</a>
           <a href="/sectors.html">Sectors</a>
@@ -116,12 +119,12 @@ NAV_BLOCKS = {
         <div class="imq-dd-menu">
           <a href="/t/">研究清單</a>
           <a href="/dd-screener/">DD Screener</a>
+          <a href="/canslim/">CAN SLIM 選股</a>
           <a href="/stock-dash/">個股儀表板</a>
           <a href="/etf-dash/">ETF 儀表板</a>
           <a href="/active-etf/">主動式 ETF</a>
           <a href="/id/">產業研究</a>
           <a href="/ideas/">投資想法</a>
-          <a href="/id/tier_matrix.html">Tier Matrix</a>
         </div>
       </div>
       <a href="/mental-models/">心智模型</a>
@@ -136,7 +139,6 @@ NAV_BLOCKS = {
       </div>
       <a href="/simulation/">模擬</a>
       <a href="/flow/">投資流程</a>
-      <a href="/how-to.html">使用指南</a>
       <a href="/search.html">搜尋</a>
     </nav>
   </div>
@@ -188,6 +190,8 @@ NAV_BLOCKS = {
           <a href="/macro/">總經深度報告</a>
           <a href="/macro/db/">總經資料庫</a>
           <a href="/ai-credit/">AI 信用監測</a>
+          <a href="/tw-chips/">台股籌碼</a>
+          <a href="/kr-chips/">韓股籌碼</a>
           <a href="/earnings/">財報分析</a>
           <a href="/markets.html">Markets</a>
           <a href="/sectors.html">Sectors</a>
@@ -199,12 +203,12 @@ NAV_BLOCKS = {
         <div class="imq-dd-menu">
           <a href="/t/">研究清單</a>
           <a href="/dd-screener/">DD Screener</a>
+          <a href="/canslim/">CAN SLIM 選股</a>
           <a href="/stock-dash/">個股儀表板</a>
           <a href="/etf-dash/">ETF 儀表板</a>
           <a href="/active-etf/">主動式 ETF</a>
           <a href="/id/">產業研究</a>
           <a href="/ideas/">投資想法</a>
-          <a href="/id/tier_matrix.html">Tier Matrix</a>
         </div>
       </div>
       <a href="/mental-models/">心智模型</a>
@@ -219,7 +223,6 @@ NAV_BLOCKS = {
       </div>
       <a href="/simulation/">模擬</a>
       <a href="/flow/">投資流程</a>
-      <a href="/how-to.html">使用指南</a>
       <a href="/search.html">搜尋</a>
     </nav>
   </div>
