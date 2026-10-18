@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from live.archive_note import ANCHOR, END, NOTE_TEXT, START, apply_note, note_html
+from live.archive_note import ANCHOR, END, NOTE_TEXT, NOTE_TEXT_TW, START, apply_note, note_html
 
 PAGE = (
     '<html><body>\n<header>nav</header>\n<section class="hero"><h1>QGM</h1></section>\n\n'
@@ -49,4 +49,10 @@ def test_no_archive_banner_wording():
 def test_daily_screener_applies_note_after_nav_injection():
     src = (Path(__file__).resolve().parent.parent / "live" / "daily_screener.py").read_text(encoding="utf-8")
     assert "from live.archive_note import apply_note" in src
-    assert src.index('"__IMQ_NAV__"') < src.index("html = apply_note(html)") < src.index("html_path.write_text(html)")
+    assert src.index('"__IMQ_NAV__"') < src.index("html = apply_note(html, market)") < src.index("html_path.write_text(html)")
+
+
+def test_tw_page_uses_tw_text():
+    out = apply_note(PAGE, "tw")
+    assert NOTE_TEXT_TW in out and NOTE_TEXT not in out
+    assert apply_note(out, "tw") == out
