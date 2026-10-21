@@ -56,6 +56,9 @@ canonical 同日同步，已重新驗證對 canonical byte-identical。
 2026-10-16 補：市場 ▾ 下拉緊接「總經資料庫」之後新增「AI 信用監測」(/ai-credit/)——
 canonical 同日同步。
 2026-10-19 補（catch-up）：市場 ▾ 補「台股籌碼」「韓股籌碼」，選股 ▾ 補「CAN SLIM 選股」；研究 ▾ 拿掉「Tier Matrix」，頂層拿掉「使用指南」。QGM 已不在選單，us／tw 兩塊由 canonical full_nav_block('pick','qus'/'qtw') 重生為 byte-identical，只剩群高亮。
+2026-10-21 補：市場 ▾ 拆組——市場 ▾ 只留 5 項（市況主控台／情報監視器／每日簡報／資產輪動雷達／財報分析），
+新增下拉「總經與籌碼 ▾」(group "macrochip"，排市場之後、選股之前，7 項：總經深度報告／總經資料庫／
+AI 信用監測／台股籌碼／韓股籌碼／全球市場／產業板塊)。canonical 同日同步，已驗證 byte-identical（us/tw 兩塊）。
 """
 
 # market -> canonical header block ('us' -> /qgm/ active, 'tw' -> /qgm-tw/ active)
@@ -103,14 +106,19 @@ NAV_BLOCKS = {
           <a href="/intel/">情報監視器</a>
           <a href="/briefing/">每日簡報</a>
           <a href="/rotation/radar.html">資產輪動雷達</a>
+          <a href="/earnings/">財報分析</a>
+        </div>
+      </div>
+      <div class="imq-dd">
+        <button type="button" class="imq-dd-btn">總經與籌碼<span class="imq-caret">▾</span></button>
+        <div class="imq-dd-menu">
           <a href="/macro/">總經深度報告</a>
           <a href="/macro/db/">總經資料庫</a>
           <a href="/ai-credit/">AI 信用監測</a>
           <a href="/tw-chips/">台股籌碼</a>
           <a href="/kr-chips/">韓股籌碼</a>
-          <a href="/earnings/">財報分析</a>
-          <a href="/markets.html">Markets</a>
-          <a href="/sectors.html">Sectors</a>
+          <a href="/markets.html">全球市場</a>
+          <a href="/sectors.html">產業板塊</a>
         </div>
       </div>
       <a href="/cockpit/" class="active">選股</a>
@@ -187,14 +195,19 @@ NAV_BLOCKS = {
           <a href="/intel/">情報監視器</a>
           <a href="/briefing/">每日簡報</a>
           <a href="/rotation/radar.html">資產輪動雷達</a>
+          <a href="/earnings/">財報分析</a>
+        </div>
+      </div>
+      <div class="imq-dd">
+        <button type="button" class="imq-dd-btn">總經與籌碼<span class="imq-caret">▾</span></button>
+        <div class="imq-dd-menu">
           <a href="/macro/">總經深度報告</a>
           <a href="/macro/db/">總經資料庫</a>
           <a href="/ai-credit/">AI 信用監測</a>
           <a href="/tw-chips/">台股籌碼</a>
           <a href="/kr-chips/">韓股籌碼</a>
-          <a href="/earnings/">財報分析</a>
-          <a href="/markets.html">Markets</a>
-          <a href="/sectors.html">Sectors</a>
+          <a href="/markets.html">全球市場</a>
+          <a href="/sectors.html">產業板塊</a>
         </div>
       </div>
       <a href="/cockpit/" class="active">選股</a>
