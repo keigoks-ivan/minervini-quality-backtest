@@ -59,6 +59,7 @@ canonical 同日同步。
 2026-10-21 補：市場 ▾ 拆組——市場 ▾ 只留 5 項（市況主控台／情報監視器／每日簡報／資產輪動雷達／財報分析），
 新增下拉「總經與籌碼 ▾」(group "macrochip"，排市場之後、選股之前，7 項：總經深度報告／總經資料庫／
 AI 信用監測／台股籌碼／韓股籌碼／全球市場／產業板塊)。canonical 同日同步，已驗證 byte-identical（us/tw 兩塊）。
+2026-10-24 補：頂層重新排序——首頁｜市場 ▾｜總經與籌碼 ▾｜研究 ▾｜選股｜系統 ▾｜投資流程｜模擬｜心智模型｜搜尋（只換位置）。canonical 同日同步，已驗證 byte-identical（us/tw 兩塊）。
 """
 
 # market -> canonical header block ('us' -> /qgm/ active, 'tw' -> /qgm-tw/ active)
@@ -122,7 +123,6 @@ NAV_BLOCKS = {
           <a href="/sectors.html">產業板塊</a>
         </div>
       </div>
-      <a href="/cockpit/" class="active">選股</a>
       <div class="imq-dd">
         <button type="button" class="imq-dd-btn">研究<span class="imq-caret">▾</span></button>
         <div class="imq-dd-menu">
@@ -136,7 +136,7 @@ NAV_BLOCKS = {
           <a href="/ideas/">投資想法</a>
         </div>
       </div>
-      <a href="/mental-models/">心智模型</a>
+      <a href="/cockpit/" class="active">選股</a>
       <div class="imq-dd">
         <button type="button" class="imq-dd-btn">系統<span class="imq-caret">▾</span></button>
         <div class="imq-dd-menu">
@@ -146,8 +146,9 @@ NAV_BLOCKS = {
           <a href="/data.html">公開資料</a>
         </div>
       </div>
-      <a href="/simulation/">模擬</a>
       <a href="/flow/">投資流程</a>
+      <a href="/simulation/">模擬</a>
+      <a href="/mental-models/">心智模型</a>
       <a href="/search.html">搜尋</a>
     </nav>
   </div>
@@ -212,7 +213,6 @@ NAV_BLOCKS = {
           <a href="/sectors.html">產業板塊</a>
         </div>
       </div>
-      <a href="/cockpit/" class="active">選股</a>
       <div class="imq-dd">
         <button type="button" class="imq-dd-btn">研究<span class="imq-caret">▾</span></button>
         <div class="imq-dd-menu">
@@ -226,7 +226,7 @@ NAV_BLOCKS = {
           <a href="/ideas/">投資想法</a>
         </div>
       </div>
-      <a href="/mental-models/">心智模型</a>
+      <a href="/cockpit/" class="active">選股</a>
       <div class="imq-dd">
         <button type="button" class="imq-dd-btn">系統<span class="imq-caret">▾</span></button>
         <div class="imq-dd-menu">
@@ -236,8 +236,9 @@ NAV_BLOCKS = {
           <a href="/data.html">公開資料</a>
         </div>
       </div>
-      <a href="/simulation/">模擬</a>
       <a href="/flow/">投資流程</a>
+      <a href="/simulation/">模擬</a>
+      <a href="/mental-models/">心智模型</a>
       <a href="/search.html">搜尋</a>
     </nav>
   </div>
