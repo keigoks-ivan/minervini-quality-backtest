@@ -119,8 +119,8 @@ NAV_BLOCKS = {
           <a href="/ai-credit/">AI 信用監測</a>
           <a href="/tw-chips/">台股籌碼</a>
           <a href="/kr-chips/">韓股籌碼</a>
-          <a href="/markets.html">全球市場</a>
-          <a href="/sectors.html">產業板塊</a>
+          <a href="/etf-dash/?view=overview&tab=countries">全球市場</a>
+          <a href="/etf-dash/?view=overview&tab=sectors">產業板塊</a>
         </div>
       </div>
       <div class="imq-dd">
@@ -209,8 +209,8 @@ NAV_BLOCKS = {
           <a href="/ai-credit/">AI 信用監測</a>
           <a href="/tw-chips/">台股籌碼</a>
           <a href="/kr-chips/">韓股籌碼</a>
-          <a href="/markets.html">全球市場</a>
-          <a href="/sectors.html">產業板塊</a>
+          <a href="/etf-dash/?view=overview&tab=countries">全球市場</a>
+          <a href="/etf-dash/?view=overview&tab=sectors">產業板塊</a>
         </div>
       </div>
       <div class="imq-dd">
