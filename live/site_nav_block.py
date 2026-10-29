@@ -108,6 +108,7 @@ NAV_BLOCKS = {
           <a href="/intel/">情報監視器</a>
           <a href="/briefing/">每日簡報</a>
           <a href="/rotation/radar.html">資產輪動雷達</a>
+          <a href="/markets.html">風險偏好儀表</a>
           <a href="/earnings/">財報分析</a>
         </div>
       </div>
@@ -196,6 +197,7 @@ NAV_BLOCKS = {
           <a href="/intel/">情報監視器</a>
           <a href="/briefing/">每日簡報</a>
           <a href="/rotation/radar.html">資產輪動雷達</a>
+          <a href="/markets.html">風險偏好儀表</a>
           <a href="/earnings/">財報分析</a>
         </div>
       </div>
