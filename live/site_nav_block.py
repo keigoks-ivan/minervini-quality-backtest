@@ -60,6 +60,7 @@ canonical 同日同步。
 新增下拉「總經與籌碼 ▾」(group "macrochip"，排市場之後、選股之前，7 項：總經深度報告／總經資料庫／
 AI 信用監測／台股籌碼／韓股籌碼／全球市場／產業板塊)。canonical 同日同步，已驗證 byte-identical（us/tw 兩塊）。
 2026-10-24 補：頂層重新排序——首頁｜市場 ▾｜總經與籌碼 ▾｜研究 ▾｜選股｜系統 ▾｜投資流程｜模擬｜心智模型｜搜尋（只換位置）。canonical 同日同步，已驗證 byte-identical（us/tw 兩塊）。
+2026-10-30 補：研究 ▾ 下拉緊接「DD Screener」之後新增「RS 排行」(/screeners.html)——canonical 同日同步，已驗證 byte-identical（us/tw 兩塊）。
 """
 
 # market -> canonical header block ('us' -> /qgm/ active, 'tw' -> /qgm-tw/ active)
@@ -129,6 +130,7 @@ NAV_BLOCKS = {
         <div class="imq-dd-menu">
           <a href="/t/">研究清單</a>
           <a href="/dd-screener/">DD Screener</a>
+          <a href="/screeners.html">RS 排行</a>
           <a href="/canslim/">CAN SLIM 選股</a>
           <a href="/stock-dash/">個股儀表板</a>
           <a href="/etf-dash/">ETF 儀表板</a>
@@ -220,6 +222,7 @@ NAV_BLOCKS = {
         <div class="imq-dd-menu">
           <a href="/t/">研究清單</a>
           <a href="/dd-screener/">DD Screener</a>
+          <a href="/screeners.html">RS 排行</a>
           <a href="/canslim/">CAN SLIM 選股</a>
           <a href="/stock-dash/">個股儀表板</a>
           <a href="/etf-dash/">ETF 儀表板</a>
