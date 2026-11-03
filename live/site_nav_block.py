@@ -61,6 +61,7 @@ canonical 同日同步。
 AI 信用監測／台股籌碼／韓股籌碼／全球市場／產業板塊)。canonical 同日同步，已驗證 byte-identical（us/tw 兩塊）。
 2026-10-24 補：頂層重新排序——首頁｜市場 ▾｜總經與籌碼 ▾｜研究 ▾｜選股｜系統 ▾｜投資流程｜模擬｜心智模型｜搜尋（只換位置）。canonical 同日同步，已驗證 byte-identical（us/tw 兩塊）。
 2026-10-30 補：研究 ▾ 下拉緊接「DD Screener」之後新增「RS 排行」(/screeners.html)——canonical 同日同步，已驗證 byte-identical（us/tw 兩塊）。
+2026-11-03 補：總經與籌碼 ▾ 下拉緊接「韓股籌碼」之後新增「美股籌碼」(/us-chips/)——canonical 同日同步，已驗證 byte-identical（us/tw 兩塊）。
 """
 
 # market -> canonical header block ('us' -> /qgm/ active, 'tw' -> /qgm-tw/ active)
@@ -123,6 +124,7 @@ NAV_BLOCKS = {
           <a href="/ai-credit/">AI 信用監測</a>
           <a href="/tw-chips/">台股籌碼</a>
           <a href="/kr-chips/">韓股籌碼</a>
+          <a href="/us-chips/">美股籌碼</a>
         </div>
       </div>
       <div class="imq-dd">
@@ -215,6 +217,7 @@ NAV_BLOCKS = {
           <a href="/ai-credit/">AI 信用監測</a>
           <a href="/tw-chips/">台股籌碼</a>
           <a href="/kr-chips/">韓股籌碼</a>
+          <a href="/us-chips/">美股籌碼</a>
         </div>
       </div>
       <div class="imq-dd">
