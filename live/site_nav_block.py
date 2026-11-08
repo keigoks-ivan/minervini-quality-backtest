@@ -139,6 +139,7 @@ NAV_BLOCKS = {
           <a href="/active-etf/">主動式 ETF</a>
           <a href="/id/">產業研究</a>
           <a href="/ideas/">投資想法</a>
+          <a href="/track-record/">個股裁決實績</a>
         </div>
       </div>
       <a href="/cockpit/" class="active">選股</a>
@@ -232,6 +233,7 @@ NAV_BLOCKS = {
           <a href="/active-etf/">主動式 ETF</a>
           <a href="/id/">產業研究</a>
           <a href="/ideas/">投資想法</a>
+          <a href="/track-record/">個股裁決實績</a>
         </div>
       </div>
       <a href="/cockpit/" class="active">選股</a>
