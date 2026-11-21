@@ -62,6 +62,7 @@ AI 信用監測／台股籌碼／韓股籌碼／全球市場／產業板塊)。c
 2026-10-24 補：頂層重新排序——首頁｜市場 ▾｜總經與籌碼 ▾｜研究 ▾｜選股｜系統 ▾｜投資流程｜模擬｜心智模型｜搜尋（只換位置）。canonical 同日同步，已驗證 byte-identical（us/tw 兩塊）。
 2026-10-30 補：研究 ▾ 下拉緊接「DD Screener」之後新增「RS 排行」(/screeners.html)——canonical 同日同步，已驗證 byte-identical（us/tw 兩塊）。
 2026-11-03 補：總經與籌碼 ▾ 下拉緊接「韓股籌碼」之後新增「美股籌碼」(/us-chips/)——canonical 同日同步，已驗證 byte-identical（us/tw 兩塊）。
+2026-11-21 補：研究 ▾ 下拉緊接「CAN SLIM 選股」之後新增「大跌領導股」(/leaders/)——canonical 同日同步，已驗證 byte-identical（us/tw 兩塊）。
 """
 
 # market -> canonical header block ('us' -> /qgm/ active, 'tw' -> /qgm-tw/ active)
@@ -134,6 +135,7 @@ NAV_BLOCKS = {
           <a href="/dd-screener/">DD Screener</a>
           <a href="/screeners.html">RS 排行</a>
           <a href="/canslim/">CAN SLIM 選股</a>
+          <a href="/leaders/">大跌領導股</a>
           <a href="/stock-dash/">個股儀表板</a>
           <a href="/etf-dash/">ETF 儀表板</a>
           <a href="/active-etf/">主動式 ETF</a>
@@ -228,6 +230,7 @@ NAV_BLOCKS = {
           <a href="/dd-screener/">DD Screener</a>
           <a href="/screeners.html">RS 排行</a>
           <a href="/canslim/">CAN SLIM 選股</a>
+          <a href="/leaders/">大跌領導股</a>
           <a href="/stock-dash/">個股儀表板</a>
           <a href="/etf-dash/">ETF 儀表板</a>
           <a href="/active-etf/">主動式 ETF</a>
