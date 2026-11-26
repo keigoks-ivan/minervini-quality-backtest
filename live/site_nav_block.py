@@ -131,12 +131,12 @@ NAV_BLOCKS = {
       <div class="imq-dd">
         <button type="button" class="imq-dd-btn">研究<span class="imq-caret">▾</span></button>
         <div class="imq-dd-menu">
+          <a href="/stock-dash/">個股儀表板</a>
           <a href="/t/">研究清單</a>
           <a href="/dd-screener/">DD Screener</a>
           <a href="/screeners.html">RS 排行</a>
           <a href="/canslim/">CAN SLIM 選股</a>
           <a href="/leaders/">大跌領導股</a>
-          <a href="/stock-dash/">個股儀表板</a>
           <a href="/etf-dash/">ETF 儀表板</a>
           <a href="/active-etf/">主動式 ETF</a>
           <a href="/id/">產業研究</a>
@@ -226,12 +226,12 @@ NAV_BLOCKS = {
       <div class="imq-dd">
         <button type="button" class="imq-dd-btn">研究<span class="imq-caret">▾</span></button>
         <div class="imq-dd-menu">
+          <a href="/stock-dash/">個股儀表板</a>
           <a href="/t/">研究清單</a>
           <a href="/dd-screener/">DD Screener</a>
           <a href="/screeners.html">RS 排行</a>
           <a href="/canslim/">CAN SLIM 選股</a>
           <a href="/leaders/">大跌領導股</a>
-          <a href="/stock-dash/">個股儀表板</a>
           <a href="/etf-dash/">ETF 儀表板</a>
           <a href="/active-etf/">主動式 ETF</a>
           <a href="/id/">產業研究</a>
